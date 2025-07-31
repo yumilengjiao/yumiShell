@@ -1,5 +1,6 @@
 <template>
-  <div class="menu-bar">
+  <div class="tool-tab-bar">
+    123
   </div>
 </template>
 
@@ -10,9 +11,8 @@
 <style scoped lang="scss">
 @use '../../styles/variables.scss' as variables;
 
-.menu-bar {
-  height: variables.$menu-bar-height;
-  background-color: #3e3e42;
-  -webkit-app-region: drag;
+.tool-tab-bar {
+  height: calc(100vh - variables.$menu-bar-height);
+  background-color: #c99898;
 }
 </style>

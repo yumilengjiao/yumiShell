@@ -9,7 +9,7 @@ function createWindow(): void {
     width: 1000,
     height: 670,
     show: false,
-    frame: false,
+    frame: true,
     transparent: true,
     title: 'YumiShell',
     backgroundColor: '#00000000',

@@ -8,9 +8,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    CloseIcon: typeof import('./src/components/MenuBar/CloseIcon.vue')['default']
     FileView: typeof import('./src/components/FileView/index.vue')['default']
     MenuBar: typeof import('./src/components/MenuBar/index.vue')['default']
+    ShellTabBar: typeof import('./src/components/ShellTabBar/index.vue')['default']
     ShellView: typeof import('./src/components/ShellView/index.vue')['default']
     TabBar: typeof import('./src/components/TabBar/index.vue')['default']
+    TinyTabItem: typeof import('@opentiny/vue-tab-item')['default']
+    TinyTabs: typeof import('@opentiny/vue-tabs')['default']
+    ToolTabBar: typeof import('./src/components/ToolTabBar/index.vue')['default']
   }
 }

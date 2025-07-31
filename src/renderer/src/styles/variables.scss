@@ -1,9 +1,13 @@
 // 定义全局变量
 //菜单栏高度
-$menu-bar-height: 10vh;
+$menu-bar-height: 35px;
 //tab栏背景色
 $tab-bar-bg-color: black;
 //shell背景色
 $shell-bg-color: black;
 //shell透明度
 $shell-opacity: 0.9;
+//文件显示前三个的flex值
+$file-view-common-flex: 0.15;
+//文件显示最后一个的flex的值
+$file-view-main-flex: 2;

@@ -13,7 +13,6 @@
 
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
-import { TinyTabs, TinyTabItem } from '@opentiny/vue'
 import ShellView from '@renderer/components/ShellView/index.vue'
 
 const activeName = ref('0')
