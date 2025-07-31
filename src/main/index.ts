@@ -6,10 +6,13 @@ import icon from '../../resources/icon.png?asset'
 function createWindow(): void {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 900,
+    width: 1000,
     height: 670,
     show: false,
     frame: false,
+    transparent: true,
+    title: 'YumiShell',
+    backgroundColor: '#00000000',
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),

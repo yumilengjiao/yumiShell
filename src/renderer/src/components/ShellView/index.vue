@@ -7,7 +7,7 @@
 
 <script lang="ts" setup>
 import { Terminal } from '@xterm/xterm';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, nextTick, watch } from 'vue';
 //引入调整大小的插件
 import { FitAddon } from '@xterm/addon-fit';
 //导入xterm样式
@@ -18,6 +18,7 @@ const container = ref<HTMLDivElement | null>(null);
 const fitAddon = new FitAddon();
 //xterm实例
 let xterm: Terminal;
+const props = defineProps(['activeName'])
 onMounted(() => {
   xterm = new Terminal({
     cursorBlink: true,
@@ -29,8 +30,25 @@ onMounted(() => {
   //调整大小
   fitAddon.fit();
   xterm.write('Welcome to Yumi Shell\r\n$');
+  console.log(props);
 })
-
+//监视activeName的变化
+watch(() => props.activeName, (newVal, oldVal) => {
+  if (newVal === oldVal) {
+    return
+  }
+  //调整大小
+  nextTick(() => {
+    fitAddon.fit();
+  })
+})
+//供外部调整xterm大小
+const resizeXterm = () => {
+  fitAddon.fit();
+}
+defineExpose({
+  resizeXterm
+})
 </script>
 
 <style scoped lang="scss">

@@ -1,7 +1,9 @@
 import { resolve } from 'path'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import Components from 'unplugin-vue-components/vite'
+import AutoImport from 'unplugin-auto-import/vite'
+import { TinyVueSingleResolver } from '@opentiny/unplugin-tiny-vue'
 import vue from '@vitejs/plugin-vue'
-import importPlugin from '@opentiny/vue-vite-import'
 
 export default defineConfig({
   main: {
@@ -18,19 +20,12 @@ export default defineConfig({
     },
     plugins: [
       vue(),
-      importPlugin(
-        [
-          {
-            libraryName: '@opentiny/vue'
-          },
-          {
-            libraryName: `@opentiny/vue-icon`,
-            customName: (name) => {
-              return `@opentiny/vue-icon/lib/${name.replace(/^icon-/, '')}.js`
-            }
-          }
-        ],
-        'pc' // 此配置非必选，按需配置 (pc|mobile|mobile-first)
-      )]
+      Components({
+        resolvers: [TinyVueSingleResolver]
+      }),
+      AutoImport({
+        resolvers: [TinyVueSingleResolver]
+      })
+    ]
   }
 })

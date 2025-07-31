@@ -1,10 +1,13 @@
 <template>
   <div class="tab-bar">
-    <tiny-tabs v-model="activeName" size="small">
+    <tiny-tabs v-model="activeName" size="small" @click="toggleActive">
       <tiny-tab-item :key="item.name" v-for="item in tabs" :title="item.title" :name="item.name">
-        <ShellView />
       </tiny-tab-item>
     </tiny-tabs>
+    <template v-for="(item, index) in tabs" :key="item.name">
+      <ShellView :activeName="activeName" class="templateShell" v-show="activeName === index.toString()"
+        ref="shellView" />
+    </template>
   </div>
 </template>
 
@@ -13,11 +16,10 @@ import { ref, reactive } from 'vue'
 import { TinyTabs, TinyTabItem } from '@opentiny/vue'
 import ShellView from '@renderer/components/ShellView/index.vue'
 
-const activeName = ref('1')
+const activeName = ref('0')
 const tabs = reactive<any>([])
-
 // 创建 tabs
-for (let i = 1; i < 5; i++) {
+for (let i = 0; i < 4; i++) {
   const title = `Tab ${i}`
   tabs.push({
     title,
@@ -36,27 +38,22 @@ const toggleActive = (e) => {
 
 .tab-bar {
   height: calc(100vh - variables.$menu-bar-height);
-  width: 100%;
 
   .tiny-tabs {
-    height: 100%;
-    width: 100%;
 
     :deep(.tiny-tabs__header) {
       background: variables.$tab-bar-bg-color;
     }
 
     :deep(.tiny-tabs__content) {
-      height: calc(100% - 40px);
-      width: 100%;
       margin: 0;
       padding: 0;
-
-      .active-item {
-        height: 100%;
-        width: 100%;
-      }
     }
+  }
+
+  .templateShell {
+    height: calc(100% - 40px);
+    width: 100%;
   }
 }
 </style>
