@@ -14,6 +14,7 @@ declare module 'vue' {
     ShellTabBar: typeof import('./src/components/ShellTabBar/index.vue')['default']
     ShellView: typeof import('./src/components/ShellView/index.vue')['default']
     TabBar: typeof import('./src/components/TabBar/index.vue')['default']
+    TinyButton: typeof import('@opentiny/vue-button')['default']
     TinyTabItem: typeof import('@opentiny/vue-tab-item')['default']
     TinyTabs: typeof import('@opentiny/vue-tabs')['default']
     ToolTabBar: typeof import('./src/components/ToolTabBar/index.vue')['default']

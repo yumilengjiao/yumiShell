@@ -3,13 +3,14 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+let win: BrowserWindow | null = null
 function createWindow(): void {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1000,
     height: 670,
     show: false,
-    frame: true,
+    frame: false,
     transparent: true,
     title: 'YumiShell',
     backgroundColor: '#00000000',
@@ -21,7 +22,7 @@ function createWindow(): void {
   })
 
   win.on('ready-to-show', () => {
-    win.show()
+    win?.show()
   })
 
   win.webContents.setWindowOpenHandler((details) => {
@@ -37,11 +38,25 @@ function createWindow(): void {
     win.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
-
+// 监听渲染进程发送的回调函数
+const closeWindow = () => {
+  win?.close()
+}
+const minimizeWindow = () => {
+  win?.minimize()
+}
+const maximizeWindow = () => {
+  win?.maximize()
+}
+const windowedWindow = () => {
+  win?.setSize(1000, 670)
+  //窗口在屏幕中央
+  win?.setPosition(100, 50)
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.on('ready', () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -52,8 +67,15 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  //ipc
+  // 监听渲染进程发送的关闭窗口事件
+  ipcMain.on('window-close', closeWindow)
+  // 监听渲染进程发送的最小化窗口事件
+  ipcMain.on('window-minimize', minimizeWindow)
+  // 监听渲染进程发送的最大化窗口事件
+  ipcMain.on('window-maximize', maximizeWindow)
+  //监听渲染进程发送的窗口化事件
+  ipcMain.on('window-windowed', windowedWindow)
 
   createWindow()
 
@@ -73,5 +95,3 @@ app.on('window-all-closed', () => {
   }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
