@@ -45,7 +45,7 @@ const windowedOrFullscreen = () => {
 
 .menu-bar {
   height: variables.$menu-bar-height;
-  background-color: #3e3e42;
+  background-color: var(--base-menu-background-color);
   -webkit-app-region: drag;
 
   .os-button {

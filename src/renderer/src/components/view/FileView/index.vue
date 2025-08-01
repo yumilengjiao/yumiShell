@@ -25,7 +25,7 @@
 .file-view {
   width: 100%;
   height: calc(100vh - variables.$menu-bar-height);
-  background-color: variables.$controller-bg-color;
+  background-color: var(--base-background-color);
   display: flex;
   flex-direction: column;
 
@@ -46,46 +46,46 @@
   }
 
   .root {
-    background-color: variables.$controller-bg-color;
+    background-color: var(--base-background-color);
     padding: 2px;
-    border: 2px dashed #101a23;
+    border: 2px dashed var(--base-border-color);
     transition: border-width 0.1s ease;
 
     &:hover {
-      border: 5px dashed #444444;
+      border: 5px dashed var(--base-border-hover-color);
     }
   }
 
   .first {
-    background-color: variables.$controller-bg-color;
+    background-color: var(--base-background-color);
     padding: 2px;
-    border: 2px dashed #101a23;
+    border: 2px dashed var(--base-border-color);
     transition: border-width 0.1s ease;
 
     &:hover {
-      border: 5px dashed #444444;
+      border: 5px dashed var(--base-border-hover-color);
     }
   }
 
   .second {
-    background-color: variables.$controller-bg-color;
+    background-color: var(--base-background-color);
     padding: 2px;
-    border: 2px dashed #101a23;
+    border: 2px dashed var(--base-border-color);
     transition: border-width 0.1s ease;
 
     &:hover {
-      border: 5px dashed #444444;
+      border: 5px dashed var(--base-border-hover-color);
     }
   }
 
   .third {
-    background-color: variables.$controller-bg-color;
+    background-color: var(--base-background-color);
     padding: 2px;
-    border: 2px dashed #101a23;
+    border: 2px dashed var(--base-border-color);
     transition: border-width 0.1s ease;
 
     &:hover {
-      border: 5px dashed #444444;
+      border: 5px dashed var(--base-border-hover-color);
     }
   }
 }

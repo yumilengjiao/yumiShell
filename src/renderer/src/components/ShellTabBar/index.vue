@@ -41,7 +41,7 @@ const toggleActive = (e) => {
   .tiny-tabs {
 
     :deep(.tiny-tabs__header) {
-      background: variables.$tab-bar-bg-color;
+      background: var(--base-background-color);
     }
 
     :deep(.tiny-tabs__content) {

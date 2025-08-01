@@ -1,0 +1,17 @@
+:root {
+  --base-background-color: #efefef;
+  --base-menu-background-color: #b3b3b3;
+  --base-text-color: #000000;
+  --base-border-color: #000000;
+  --base-toolbar-background-color: #484848;
+  --base-border-hover-color: #444444;
+}
+
+:root.dark {
+  --base-background-color: #0e0e0e;
+  --base-menu-background-color: #2f2f2f;
+  --base-text-color: #ffffff;
+  --base-border-color: #d5d5d5;
+  --base-toolbar-background-color: #b9b9b9;
+  --base-border-hover-color: #1c1c1c;
+}

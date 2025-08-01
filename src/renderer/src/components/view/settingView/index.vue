@@ -14,6 +14,7 @@
 .setting-view {
   width: 100%;
   height: calc(100vh - variables.$menu-bar-height);
-  background-color: variables.$controller-bg-color;
+  background-color: var(--base-background-color);
+  border-left: 1px solid var(--base-border-color);
 }
 </style>

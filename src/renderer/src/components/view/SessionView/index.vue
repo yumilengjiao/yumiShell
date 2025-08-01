@@ -1,11 +1,12 @@
 <template>
   <div class="session-view">
-    nihao
+    <tiny-tree-menu :show-filter="false" :data="sessionsStore.sessions" draggable></tiny-tree-menu>
   </div>
 </template>
 
 <script lang="ts" setup>
-
+import { useSessionsStore } from '@renderer/stores/useSessionsStore'
+const sessionsStore = useSessionsStore()
 </script>
 
 <style scoped lang="scss">
@@ -14,6 +15,7 @@
 .session-view {
   width: 100%;
   height: calc(100vh - variables.$menu-bar-height);
-  background-color: variables.$controller-bg-color;
+  background-color: var(--base-background-color);
+  border-left: 1px solid var(--base-border-color);
 }
 </style>

@@ -72,7 +72,7 @@ const handleClick = () => {
     width: 100%;
     border-bottom: 1px solid #000000;
     height: 100%;
-    background-color: #393939;
+    background-color: var(--base-toolbar-background-color);
     transition: background-color 0.3s;
 
     &.clicked {

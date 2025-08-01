@@ -20,6 +20,7 @@ declare module 'vue' {
     TinyButton: typeof import('@opentiny/vue-button')['default']
     TinyTabItem: typeof import('@opentiny/vue-tab-item')['default']
     TinyTabs: typeof import('@opentiny/vue-tabs')['default']
+    TinyTreeMenu: typeof import('@opentiny/vue-tree-menu')['default']
     ToolTabBar: typeof import('./src/components/ToolTabBar/index.vue')['default']
   }
 }
