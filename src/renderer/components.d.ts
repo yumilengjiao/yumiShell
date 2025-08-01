@@ -9,8 +9,11 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CloseIcon: typeof import('./src/components/MenuBar/CloseIcon.vue')['default']
-    FileView: typeof import('./src/components/FileView/index.vue')['default']
+    FileView: typeof import('./src/components/view/FileView/index.vue')['default']
+    FuncButton: typeof import('./src/components/ToolTabBar/FuncButton.vue')['default']
     MenuBar: typeof import('./src/components/MenuBar/index.vue')['default']
+    SessionView: typeof import('./src/components/view/SessionView/index.vue')['default']
+    SettingView: typeof import('./src/components/view/settingView/index.vue')['default']
     ShellTabBar: typeof import('./src/components/ShellTabBar/index.vue')['default']
     ShellView: typeof import('./src/components/ShellView/index.vue')['default']
     TabBar: typeof import('./src/components/TabBar/index.vue')['default']

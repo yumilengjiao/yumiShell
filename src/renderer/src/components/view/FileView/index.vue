@@ -20,12 +20,12 @@
 </script>
 
 <style scoped lang="scss">
-@use '../../styles/variables.scss' as variables;
+@use '@renderer/styles/variables.scss' as variables;
 
 .file-view {
   width: 100%;
   height: calc(100vh - variables.$menu-bar-height);
-  background-color: whitesmoke;
+  background-color: variables.$controller-bg-color;
   display: flex;
   flex-direction: column;
 
@@ -46,7 +46,7 @@
   }
 
   .root {
-    background-color: #2f2f2f;
+    background-color: variables.$controller-bg-color;
     padding: 2px;
     border: 2px dashed #101a23;
     transition: border-width 0.1s ease;
@@ -57,7 +57,7 @@
   }
 
   .first {
-    background-color: #2f2f2f;
+    background-color: variables.$controller-bg-color;
     padding: 2px;
     border: 2px dashed #101a23;
     transition: border-width 0.1s ease;
@@ -68,7 +68,7 @@
   }
 
   .second {
-    background-color: #2f2f2f;
+    background-color: variables.$controller-bg-color;
     padding: 2px;
     border: 2px dashed #101a23;
     transition: border-width 0.1s ease;
@@ -79,7 +79,7 @@
   }
 
   .third {
-    background-color: #2f2f2f;
+    background-color: variables.$controller-bg-color;
     padding: 2px;
     border: 2px dashed #101a23;
     transition: border-width 0.1s ease;
