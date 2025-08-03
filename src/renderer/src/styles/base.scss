@@ -1,5 +1,6 @@
 :root {
   --base-background-color: #efefef;
+  --base-shell-bg-color: #efefef;
   --base-menu-background-color: #b3b3b3;
   --base-text-color: #000000;
   --base-border-color: #000000;
@@ -10,6 +11,7 @@
 :root.dark {
   --base-background-color: #0e0e0e;
   --base-menu-background-color: #2f2f2f;
+  --base-shell-bg-color: #0e0e0e;
   --base-text-color: #ffffff;
   --base-border-color: #d5d5d5;
   --base-toolbar-background-color: #b9b9b9;

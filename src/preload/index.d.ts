@@ -8,6 +8,8 @@ declare global {
       minimizeWindow: () => void
       maximizeWindow: () => void
       windowedWindow: () => void
+      saveSessions: (sessions: SessionGroup[]) => void
+      readSessions: () => Promise<SessionGroup[]>
     }
   }
 }

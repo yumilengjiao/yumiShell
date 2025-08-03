@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { SessionGroup } from '../main/types/session'
 
 // Custom APIs for renderer
 const api = {
@@ -16,7 +17,13 @@ const api = {
   },
   windowedWindow: () => {
     ipcRenderer.send('window-windowed')
-  }
+  },
+  //保存sessions的方法
+  saveSessions: (sessions: SessionGroup[]) => {
+    ipcRenderer.send('save-sessions', sessions)
+  },
+  //读取sessions的方法
+  readSessions: () => ipcRenderer.invoke('read-sessions')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

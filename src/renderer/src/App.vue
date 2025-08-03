@@ -7,12 +7,17 @@
 
 <script lang="ts" setup>
 import Layout from "@renderer/layout/index.vue"
+import { useThemeStore } from "@renderer/stores/useThemeStore"
+
+const themeStore = useThemeStore()
 
 const switchTheme = () => {
   if (document.documentElement.classList.contains('dark')) {
     document.documentElement.classList.remove('dark')
+    themeStore.theme = 'light'
   } else {
     document.documentElement.classList.add('dark')
+    themeStore.theme = 'dark'
   }
 }
 </script>
