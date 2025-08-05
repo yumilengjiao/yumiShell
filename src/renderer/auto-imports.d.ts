@@ -6,5 +6,5 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-
+  const TinyNotify: typeof import('@opentiny/vue-notify')['default']
 }

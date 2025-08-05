@@ -12,12 +12,12 @@
         <tiny-col :span="1">
           <ToolTabBar />
         </tiny-col>
-        <tiny-col :span="5">
+        <tiny-col :span="4">
           <SessionView v-show="toolBarStore.nowToolBarModel === 'session'" />
           <SettingView v-show="toolBarStore.nowToolBarModel === 'setting'" />
           <FileView v-show="toolBarStore.nowToolBarModel === 'file'" />
         </tiny-col>
-        <tiny-col :span="18">
+        <tiny-col :span="19">
           <ShellTabBar />
         </tiny-col>
       </tiny-row>
