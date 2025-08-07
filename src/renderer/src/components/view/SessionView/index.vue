@@ -11,7 +11,7 @@
     </tiny-dialog-box>
     <!-- 展示当前会话 -->
     <tiny-tree-menu :default-expand-all="true" :show-filter="false" :data="sessionsStore.sessions" ellipsis draggable
-      @node-drag-start="handleDragStart" empty-text="null sessions" style="width: 100%;">
+      @node-click="handleNodeClick" @node-drag-start="handleDragStart" empty-text="null sessions" style="width: 100%;">
       <template #default="slotScope">
         <button class="addSession" v-if="slotScope.data.children"
           @click.stop="sessionAddControl(slotScope.data.id)">+</button>
@@ -68,6 +68,9 @@ import { ref } from 'vue'
 import { useSessionsStore } from '@renderer/stores/useSessionsStore'
 import type { Session } from '@renderer/types/session'
 import { iconDeleteL } from '@opentiny/vue-icon'
+import { useShellViewTabStore } from '@renderer/stores/useShellViewTabStore'
+
+const shellViewTabStore = useShellViewTabStore()
 const IconDeleteL = iconDeleteL()
 const sessionsStore = useSessionsStore()
 //这是添加自定义组的dialog-box  
@@ -93,10 +96,11 @@ const sessionData = ref<Session>({
   encoding: 'utf-8',
   terminalType: 'xterm',
 })
-// 定义单选框的值
-let isIpv4 = ref(true);
 //定义将要删除的session
 const willDeleteSession = ref<any>()
+// 定义单选框的值
+let isIpv4 = ref(true);
+
 //添加会话的控制函数
 const sessionAddControl = (groupId: string) => {
   sessionBoxVisibility.value = true
@@ -152,7 +156,6 @@ const handleDragStart = (e: any) => {
 //处理拖拽松手垃圾桶的事件
 const handleDrop = (e: DragEvent) => {
   console.log(willDeleteSession.value);
-
   console.log(sessionsStore.sessions);
 
 }
@@ -160,6 +163,19 @@ const handleDrop = (e: DragEvent) => {
 const deleteSessions = (willDeleteSession) => {
   //遍历仓库的数据查看树id是否一致，一致就删除
 
+}
+const handleNodeClick = (nodeData, node) => {
+  //父节点点击无效
+  if (!node.isLeaf) {
+    return
+  }
+  //增加一个标签页
+  shellViewTabStore.tabs.push({
+    title: "session" + shellViewTabStore.index,
+    name: crypto.randomUUID(),
+    sessionId: nodeData.id,
+  })
+  shellViewTabStore.index++
 }
 </script>
 
@@ -171,6 +187,7 @@ const deleteSessions = (willDeleteSession) => {
   height: calc(100vh - variables.$menu-bar-height);
   background-color: var(--base-background-color);
   border-left: 1px solid var(--base-border-color);
+  border-right: 1px solid var(--base-border-color);
   position: relative;
 
   .addSession {

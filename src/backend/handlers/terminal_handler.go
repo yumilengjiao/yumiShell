@@ -101,7 +101,7 @@ func initSshClient(session *config.Session) (*sshClient, error) {
     return nil, err1
   }
   //设置pty模式
-  newSession.RequestPty("xterm", 80, 40, ssh.TerminalModes{
+  newSession.RequestPty("xterm", 34, 90, ssh.TerminalModes{
     ssh.ECHO:          1,
     ssh.TTY_OP_ISPEED: 14400,
     ssh.TTY_OP_OSPEED: 14400,

@@ -18,7 +18,7 @@ func main() {
   router.HandleFunc("/ws/term/{id}/{uniqId}", handlers.HandleTerminal)
   router.HandleFunc("/ws/file/{uniqId}", handlers.HandleDirectory)
 
-  err := http.ListenAndServe(":8080", router)
+  err := http.ListenAndServe(":8977", router)
   if err != nil {
     return
   }
