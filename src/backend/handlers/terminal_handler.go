@@ -16,8 +16,8 @@ import (
 )
 
 var (
+  mutex         sync.Mutex
   sshClientList = make(map[string]*sshClient)
-  sshClienMutex sync.RWMutex
 )
 
 type sshClient struct {
@@ -31,8 +31,9 @@ type sshClient struct {
   stderr        io.Reader
 }
 
-// HandleWebsocket 处理前端websocket请求的方法
+// HandleTerminal HandleWebsocket 处理前端websocket请求的方法
 func HandleTerminal(w http.ResponseWriter, r *http.Request) {
+  mutex.Lock()
   //初始化websocket
   upgrader := websocket.Upgrader{
     WriteBufferSize: 1024,
@@ -61,6 +62,7 @@ func HandleTerminal(w http.ResponseWriter, r *http.Request) {
     log.Println("sshClient初始化失败", err)
     return
   }
+  mutex.Unlock()
   defer client.close()
   //全局中存储sshClient对象
   sshClientList[uniqId] = client
@@ -74,8 +76,6 @@ func HandleTerminal(w http.ResponseWriter, r *http.Request) {
 
 // 初始化sshClient
 func initSshClient(session *config.Session) (*sshClient, error) {
-  sshClienMutex.Lock()
-  defer sshClienMutex.Unlock()
   sshConfig := ssh.ClientConfig{
     User: session.Username,
     Auth: []ssh.AuthMethod{

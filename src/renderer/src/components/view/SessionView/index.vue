@@ -69,7 +69,12 @@ import { useSessionsStore } from '@renderer/stores/useSessionsStore'
 import type { Session } from '@renderer/types/session'
 import { iconDeleteL } from '@opentiny/vue-icon'
 import { useShellViewTabStore } from '@renderer/stores/useShellViewTabStore'
-
+import { useDirectoryStore } from '@renderer/stores/useDirectoryStore'
+// 存储上次点击的时间戳
+let lastClickTime = 0;
+// 双击阈值（毫秒）
+const DOUBLE_CLICK_THRESHOLD = 300;
+const directoryStore = useDirectoryStore()
 const shellViewTabStore = useShellViewTabStore()
 const IconDeleteL = iconDeleteL()
 const sessionsStore = useSessionsStore()
@@ -162,20 +167,28 @@ const handleDrop = (e: DragEvent) => {
 //处理删除session
 const deleteSessions = (willDeleteSession) => {
   //遍历仓库的数据查看树id是否一致，一致就删除
-
 }
 const handleNodeClick = (nodeData, node) => {
   //父节点点击无效
   if (!node.isLeaf) {
     return
   }
-  //增加一个标签页
-  shellViewTabStore.tabs.push({
-    title: "session" + shellViewTabStore.index,
-    name: crypto.randomUUID(),
-    sessionId: nodeData.id,
-  })
-  shellViewTabStore.index++
+  // 判断是否双击
+  const currentTime = Date.now();
+  const isDoubleClick = (currentTime - lastClickTime) < DOUBLE_CLICK_THRESHOLD;
+  lastClickTime = currentTime;
+  // 仅在双击时执行操作
+  if (isDoubleClick) {
+    //生成一个随机数表示一个会话的唯一标识
+    const uniqId = crypto.randomUUID()
+    // 增加一个标签页
+    shellViewTabStore.tabs.push({
+      title: "session" + shellViewTabStore.index,
+      name: uniqId,
+      sessionId: nodeData.id,
+    });
+    shellViewTabStore.index++;
+  }
 }
 </script>
 

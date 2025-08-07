@@ -23,16 +23,20 @@ import { ref } from 'vue'
 import ShellView from '@renderer/components/ShellView/index.vue'
 import { useShellViewTabStore } from '@renderer/stores/useShellViewTabStore'
 import { computed } from 'vue'
+import { useTerminalStore } from '@renderer/stores/useTerminalStore'
 
 
 const activeName = ref('0')
 const shellViewTabStore = useShellViewTabStore()
 const tabs = computed(() => shellViewTabStore.tabs)
+const terminalStore = useTerminalStore()
+
 //切换tab的回调
 const toggleActive = (e) => {
-  console.log(e);
+  terminalStore.currentSessionUniqId = e.name
 }
 const closeTab = (name) => {
+  shellViewTabStore.closeTab(name)
 }
 </script>
 

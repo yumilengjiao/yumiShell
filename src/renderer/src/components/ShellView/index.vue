@@ -8,6 +8,8 @@
 <script lang="ts" setup>
 import { Terminal } from '@xterm/xterm'
 import { onMounted, ref, nextTick, watch } from 'vue'
+//导入directory仓库
+import { useDirectoryStore } from '@renderer/stores/useDirectoryStore'
 //引入调整大小的插件
 import { FitAddon } from '@xterm/addon-fit'
 //引入webgl插件
@@ -23,6 +25,8 @@ const fitAddon = new FitAddon()
 //webgl插件
 const webglAddon = new WebglAddon()
 const terminalStore = useTerminalStore()
+const directoryStore = useDirectoryStore()
+
 //用于处理交互的websocket
 let terminalWebsocket: WebSocket
 let directoryWebsocket: WebSocket
@@ -72,6 +76,12 @@ const handleResize = (e) => {
 const initWebsocket = () => {
   terminalWebsocket = new WebSocket("ws://localhost:8977/ws/term/" + props.sessionInfo.sessionId + '/' + props.sessionInfo.name)
   directoryWebsocket = new WebSocket("ws://localhost:8977/ws/file/" + props.sessionInfo.name)
+  directoryStore.fieleOperationObjList.push({
+    uniqId: props.sessionInfo.name,
+    fileList: [],
+    currentPath: '/',
+    websocket: directoryWebsocket
+  })
 }
 const handleWebsocket = () => {
   terminalWebsocket.onopen = () => {

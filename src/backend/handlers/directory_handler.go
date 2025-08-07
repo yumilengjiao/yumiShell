@@ -23,9 +23,9 @@ func HandleDirectory(w http.ResponseWriter, r *http.Request) {
   s := vars["uniqId"]
   log.Println("传入的uniq参数是", s)
   //获取当前路径的sshClient
-  sshClienMutex.Lock()
-  defer sshClienMutex.Unlock()
+  mutex.Lock()
   client := sshClientList[s]
+  mutex.Unlock()
   upgrader := websocket.Upgrader{
     ReadBufferSize:  1024,
     WriteBufferSize: 1024,
@@ -37,13 +37,18 @@ func HandleDirectory(w http.ResponseWriter, r *http.Request) {
   if err != nil {
     log.Println("websocket升级失败", err)
   }
+
   //当前路径下的文件列表
   var fileList []FileItem
+  //获取当前目录
   initialPath, err := client.sftpClient.Getwd()
   if err != nil {
     log.Println("获取当前目录失败", err)
   }
   log.Println("当前目录是", initialPath)
+  //发送初始化路径
+  err = upgrade.WriteMessage(websocket.TextMessage, []byte(initialPath))
+  //获取当前目录下的所有文件
   dir, err := client.sftpClient.ReadDir(initialPath)
   if err != nil {
     log.Println("获取当前目录失败", err)
@@ -77,6 +82,14 @@ func handleDirectoryFile(upgrade *websocket.Conn, client *sshClient) {
     }
     log.Println("接收的目录文件路径是", string(bytes))
     path := string(bytes)
+    //发送当前路径
+    err = upgrade.WriteMessage(websocket.TextMessage, []byte(path))
+    if err != nil {
+      log.Println("发送当前路径失败", err)
+      continue
+    }
+
+    //第一次直接发送当前路径下的所有文件
     dir, err := client.sftpClient.ReadDir(path)
     if err != nil {
       log.Println("获取目录文件失败", err)
