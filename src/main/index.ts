@@ -4,14 +4,14 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import fs from 'fs'
 import icon from '../../resources/icon.png?asset'
 import { SessionGroup } from './types/session'
-//type
+import { installExtension, VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 
 let win: BrowserWindow | null = null
 function createWindow(): void {
   // Create the browser window.
   win = new BrowserWindow({
     width: 1000,
-    height: 670,
+    height: 658,
     show: false,
     frame: false,
     transparent: true,
@@ -40,6 +40,7 @@ function createWindow(): void {
   } else {
     win.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
 }
 // 监听渲染进程发送的回调函数
 //这四个负责窗口的关闭、最小化、最大化、窗口化
@@ -93,12 +94,12 @@ const readSessions = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+  installExtension(VUEJS_DEVTOOLS)
+    .then((name) => console.log(`Added Extension:  ${name}`))
+    .catch((err) => console.log('An error occurred: ', err));
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
