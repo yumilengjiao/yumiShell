@@ -6,9 +6,7 @@
       </div>
     </div>
     <div class="file-list">
-      <div v-for="(item, index) in currentOperationObj?.fileList" :key="index">
-        <FileItem :item="item" />
-      </div>
+      <FileItem v-for="(item, index) in currentOperationObj?.fileList" :key="index" :item="item" />
     </div>
   </div>
 </template>

@@ -1,5 +1,6 @@
 <template>
-  <div class="file-item">
+  <div class="file-item" @dragover="handleDragOver" @dragleave="handleDragLeave" @dragenter="handleDragEnter"
+    @drop="handleDrop" ref="fileItemRef">
     <svg v-if="props.item.isDir" t="1754619954211" class="icon" viewBox="0 0 1024 1024" version="1.1"
       xmlns="http://www.w3.org/2000/svg" p-id="1673" width="50" height="50">
       <path
@@ -28,24 +29,125 @@
     </svg>
     <div class="name">{{ props.item.name }}</div>
   </div>
-
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue'
+import { useDirectoryStore } from '@renderer/stores/useDirectoryStore'
+import { SftpRequest } from '@renderer/types/sftp'
+
 const props = defineProps(['item'])
+const fileItemRef = ref<HTMLDivElement>()
+const directoryStore = useDirectoryStore()
+
+//拖拽进入时的处理方法
+const handleDragEnter = (e: DragEvent) => {
+  if (!props.item.isDir) return
+  console.log("开始推拽")
+  e.preventDefault()
+  //加上蒙版
+  fileItemRef.value?.classList.add('drag-over')
+}
+
+//拖拽进入后的处理方法
+const handleDragOver = (e: DragEvent) => {
+  if (!props.item.isDir) return
+  console.log("开始推拽")
+  e.preventDefault()
+}
+//拖拽离开的处理方法
+const handleDragLeave = (e: DragEvent) => {
+  if (!props.item.isDir) return
+  console.log("结束推拽")
+  e.preventDefault()
+  //移除蒙版
+  setTimeout(() => {
+    fileItemRef.value?.classList.remove('drag-over')
+  }, 200)
+}
+//处理拖拽放下的事件
+const handleDrop = (e: DragEvent) => {
+  if (!props.item.isDir) return
+  e.preventDefault()
+  setTimeout(() => {
+    fileItemRef.value?.classList.remove('drag-over')
+  }, 200)
+  //将文件发送后端处理
+  //获取当前数据和拖拽放下的文件夹并拼在一起
+  console.log(directoryStore);
+  console.log(e.dataTransfer?.files[0].name);
+  console.log(e.dataTransfer?.files[0].size);
+  console.log(props.item);
+  //上传文件的路径
+  const uploadPath = directoryStore.currentOperationObj!.currentPath
+  //上传文件的对象
+  const files = Array.from(e.dataTransfer!.files)
+  files.forEach(async (item) => {
+    //将每个文件发送给后端进行上传
+    const sftpOnj: SftpRequest = {
+      requestType: 'upload',
+      path: uploadPath + "/" + props.item.name,
+
+      file: {
+        name: item.name,
+        content: await readFileAsBase64(item),
+      }
+    }
+    console.log("读取完成发送请求");
+    // 获取现在的websocket发送请求
+    directoryStore.currentOperationObj?.websocket?.send(JSON.stringify(sftpOnj))
+  })
+}
+// 添加文件读取工具函数
+const readFileAsBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      // 提取Base64内容（去掉data URL前缀）
+      const result = reader.result as string
+      const base64Content = result.split(',')[1]
+      resolve(base64Content)
+    }
+    reader.onerror = reject
+    // 以DataURL形式读取文件
+    reader.readAsDataURL(file)
+  })
+}
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@renderer/styles/variables.scss' as variables;
+
 .file-item {
   width: 75px;
   height: 75px;
   aspect-ratio: 1/1;
   margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+
+  &.drag-over::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10%;
+    background-color: variables.$drag-over-color;
+    opacity: 1;
+    /* 默认隐藏 */
+    transition: opacity 0.2s;
+    /* 平滑过渡 */
+    z-index: 1;
+    /* 确保覆盖在内容上方 */
+  }
 
   .icon {
     display: block;
     margin: 0;
     padding: 0;
+    pointer-events: none;
   }
 
   .name {
