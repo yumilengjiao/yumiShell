@@ -51,7 +51,9 @@ func HandleTerminal(w http.ResponseWriter, r *http.Request) {
   //获取路径参数
   vars := mux.Vars(r)
   sessionId := vars["id"]
+  log.Println("sessionId是", sessionId)
   uniqId := vars["uniqId"]
+  log.Println("uniqId是", uniqId)
 
   //获取session配置对象
   sessionConfig := config.GetSession(sessionId)

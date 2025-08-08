@@ -5,6 +5,7 @@ import (
   "github.com/gorilla/websocket"
   "log"
   "net/http"
+  "sort"
   "time"
 )
 
@@ -53,6 +54,10 @@ func HandleDirectory(w http.ResponseWriter, r *http.Request) {
   if err != nil {
     log.Println("获取当前目录失败", err)
   }
+  sort.Slice(dir, func(i, j int) bool {
+    return dir[i].Name() < dir[j].Name()
+  })
+
   for _, file := range dir {
     fileList = append(fileList, FileItem{
       IsDir:   file.IsDir(),

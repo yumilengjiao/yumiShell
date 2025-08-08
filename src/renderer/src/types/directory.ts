@@ -1,5 +1,5 @@
-export interface FileItem{
-  isDir : boolean;
+export interface FileItem {
+  isDir: boolean;
   modTime: string;
   Mode: string;
   name: string;
@@ -16,4 +16,4 @@ export interface FileOperationObj {
   websocket: WebSocket;
 }
 
-export type FieleOperationObjList = FileOperationObj[] 
+export type FileOperationObjList = FileOperationObj[] 

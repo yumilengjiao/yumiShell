@@ -1,10 +1,11 @@
 import { ref, watchEffect } from "vue";
 import { defineStore } from "pinia";
-import { FieleOperationObjList } from "@renderer/types/directory";
+import { FileOperationObjList, FileOperationObj } from "@renderer/types/directory";
 
 export const useDirectoryStore = defineStore('directoryStore', () => {
-  const fieleOperationObjList = ref<FieleOperationObjList>([]);
+  const fieleOperationObjList = ref<FileOperationObjList>([]);
   const currentSessionUniqId = ref<string>('');
+  const currentOperationObj = ref<FileOperationObj>()
   //每个websocket的处理
   watchEffect(() => {
     fieleOperationObjList.value.forEach((item) => {
@@ -26,8 +27,15 @@ export const useDirectoryStore = defineStore('directoryStore', () => {
       };
     })
   })
+  watchEffect(() => {
+    if (currentSessionUniqId.value) {
+      currentOperationObj.value = fieleOperationObjList.value.find((item) => item.uniqId === currentSessionUniqId.value)
+    }
+  })
+
   return {
     fieleOperationObjList,
-    currentSessionUniqId
+    currentSessionUniqId,
+    currentOperationObj
   };
 }) 

@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CloseIcon: typeof import('./src/components/MenuBar/CloseIcon.vue')['default']
+    FileItem: typeof import('./src/components/view/FileView/FileItem.vue')['default']
     FileView: typeof import('./src/components/view/FileView/index.vue')['default']
     FuncButton: typeof import('./src/components/ToolTabBar/FuncButton.vue')['default']
     IconSun: typeof import('./src/components/MenuBar/IconSun.vue')['default']
