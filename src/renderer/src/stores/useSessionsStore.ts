@@ -1,7 +1,8 @@
 import { ref, onMounted } from 'vue'
 import { defineStore } from 'pinia'
 import { Session, SessionGroup } from '@renderer/types/session'
-import { session } from 'electron';
+import { useOtherConnStore } from './useOtherConnStore'
+import { MessageType } from '@renderer/types/others';
 
 interface DisplayGroup {
   id: string;
@@ -12,9 +13,12 @@ interface DisplaySession {
   id: string;
   label: string;
 }
+
 //定义一个非响应式sessionGroup组用来存放所有有关session的信息
 let sessionGroups: SessionGroup[] = []
 export const useSessionsStore = defineStore('sessions', () => {
+  //用于处理其他东西的仓库
+  const otherConnStore = useOtherConnStore()
   // 定义一个状态变量，用于存储用于展示的会话组
   const sessions = ref<DisplayGroup[]>([
     {
@@ -94,8 +98,15 @@ export const useSessionsStore = defineStore('sessions', () => {
         label: session.labelName,
       }))
     }))
+    //告知后端重新读取session.json
+    otherConnStore.ws.send(JSON.stringify({
+      reqType: MessageType.READ_SESSIONS,
+      sessionContent: sessionGroups
+    }))
+    //通知后端
+    console.log("后端通知成功");
   }
-  //删除session
+  //用于删除本地session
   const deleteSession = (sessionId: string) => {
     console.log("删除的sessionId", sessionId);
     console.log(sessionGroups);
@@ -123,6 +134,11 @@ export const useSessionsStore = defineStore('sessions', () => {
         label: session.labelName,
       }))
     }))
+    //告知后端重新读取session.json
+    otherConnStore.ws.send(JSON.stringify({
+      reqType: MessageType.READ_SESSIONS,
+    }))
+
   }
   //使用该仓库的组件挂载时
   onMounted(async () => {

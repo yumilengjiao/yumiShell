@@ -63,15 +63,18 @@ const saveSessions = (sessions: SessionGroup[]) => {
   //获取用户数据目录
   const userDataPath = app.getPath('userData')
   console.log(userDataPath);
-  console.log('hahaha');
-
 
   // 确保目录存在
   if (!fs.existsSync(userDataPath)) {
     fs.mkdirSync(userDataPath)
   }
   // 写入文件
-  fs.writeFileSync(join(userDataPath, 'sessions.json'), JSON.stringify(sessions))
+  fs.promises.writeFile(join(userDataPath, 'sessions.json'), JSON.stringify(sessions)).then(() => {
+    console.log("写入成功");
+  }).catch((err) => {
+    console.log("写入失败", err);
+  })
+
 }
 //读取用户session的回调
 const readSessions = () => {

@@ -248,7 +248,6 @@ const handleNodeClick = (nodeData, node) => {
     height: 50px;
     bottom: 10px;
     right: 10px;
-    border: 1px solid var(--base-border-color);
     border-radius: 50%;
 
     .icon {

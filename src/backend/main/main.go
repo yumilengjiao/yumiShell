@@ -17,6 +17,7 @@ func main() {
 	// 启动 HTTP 服务器
 	router.HandleFunc("/ws/term/{id}/{uniqId}", handlers.HandleTerminal)
 	router.HandleFunc("/ws/file/{uniqId}", handlers.HandleDirectory)
+	router.HandleFunc("/ws/others", handlers.OtherHandler)
 
 	err := http.ListenAndServe(":8977", router)
 	if err != nil {

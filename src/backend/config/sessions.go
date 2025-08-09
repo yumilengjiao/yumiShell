@@ -5,10 +5,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 var (
-	SessionGroups = make([]SessionGroup, 100)
+	SessionGroups []SessionGroup
 )
 
 func init() {
@@ -34,7 +35,9 @@ type SessionGroup struct {
 }
 
 // LoadSessions 加载session.json文件
-func LoadSessions() {
+func LoadSessions() (complete bool) {
+	SessionGroups = []SessionGroup{}
+	log.Println("Load方法开始执行")
 	//获取AppData路径
 	appDataPath, err := os.UserConfigDir()
 	if err != nil {
@@ -44,24 +47,25 @@ func LoadSessions() {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println("AppData的路径是", sessionPath)
 	//session.json文件读取
 	file, err := os.ReadFile(sessionPath)
 	if err != nil {
 		log.Println("session.json文件不存在")
 		return
 	}
+	time.Sleep(5 * time.Second)
+	log.Println("session.json文件读取成功，读取的文件内容是", string(file))
 	err = json.Unmarshal(file, &SessionGroups)
 	if err != nil {
-		log.Println("session.json文件解析失败")
+		log.Println("session.json文件解析失败", err)
 		return
 	}
-	log.Println("文件读取成功:session.json文件内容是", SessionGroups)
-	log.Println("第一个会话组的session是", SessionGroups[0].SessionList[0])
-
+	log.Println("解析后的SessionGroups", SessionGroups)
+	log.Println("session.json文件解析成功")
+	return true
 }
 
-// 获得指定session
+// GetSession 获得指定session
 func GetSession(sessionId string) *Session {
 	for _, sessionGroup := range SessionGroups {
 		for _, session := range sessionGroup.SessionList {

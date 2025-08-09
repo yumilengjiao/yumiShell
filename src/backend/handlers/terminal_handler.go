@@ -54,7 +54,6 @@ func HandleTerminal(w http.ResponseWriter, r *http.Request) {
 	log.Println("sessionId是", sessionId)
 	uniqId := vars["uniqId"]
 	log.Println("uniqId是", uniqId)
-
 	//获取session配置对象
 	sessionConfig := config.GetSession(sessionId)
 
@@ -62,7 +61,6 @@ func HandleTerminal(w http.ResponseWriter, r *http.Request) {
 	client, err := initSshClient(sessionConfig)
 	if err != nil {
 		log.Println("sshClient初始化失败", err)
-		return
 	}
 	mutex.Unlock()
 	defer client.close()
