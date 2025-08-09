@@ -1,9 +1,7 @@
 <template>
   <div class="file-view">
     <div class="directory-container" v-for="(item, index) in currentPathSplit" :key="index">
-      <div class="directory">
-        {{ item }}
-      </div>
+      <a href="#" @click="handleDirectoryClick(item)">{{ item }}</a>
     </div>
     <div class="file-list">
       <FileItem v-for="(item, index) in currentOperationObj?.fileList" :key="index" :item="item" />
@@ -49,6 +47,20 @@ const mergePath = (pathSplit: string[]) => {
     return pathSplit
   }
 }
+const handleDirectoryClick = (item: string) => {
+  //如果/切完长度大于1
+  if (item.split('/').length > 2) {
+    item = item.split('/')[1]
+  }
+  const index = directoryStore.currentOperationObj!.currentPath.indexOf(item)
+  directoryStore.currentOperationObj!.currentPath = directoryStore.currentOperationObj!.currentPath.slice(0, index) + `${item}`
+  directoryStore.currentOperationObj?.websocket?.send(JSON.stringify({
+    requestType: 'get',
+    path: directoryStore.currentOperationObj!.currentPath,
+  }))
+
+
+}
 </script>
 
 <style scoped lang="scss">
@@ -61,31 +73,26 @@ const mergePath = (pathSplit: string[]) => {
   display: flex;
   flex-direction: column;
   font-size: 20px;
-  line-height: 2;
   color: var(--base-text-color);
 
   .directory-container {
+    max-height: 100px;
     border: 1px dashed var(--base-border-color);
-
-    .directory {
-      background-color: var(--base-directory-background-color);
-    }
-  }
-
-  .directory-container:last-child {
-    border: 1px dashed var(--base-border-color);
-
-    .directory {
-      background-color: var(--base-directory-background-color);
-    }
+    background-color: var(--base-directory-background-color);
+    line-height: 1.6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .file-list {
     height: 100%;
     border: 1px dashed var(--base-border-color);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    gap: 10px;
     flex-wrap: wrap;
     overflow: scroll;
     -ms-overflow-style: none;

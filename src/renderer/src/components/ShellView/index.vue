@@ -76,7 +76,7 @@ const handleResize = (e) => {
 const initWebsocket = () => {
   terminalWebsocket = new WebSocket("ws://localhost:8977/ws/term/" + props.sessionInfo.sessionId + '/' + props.sessionInfo.name)
   directoryWebsocket = new WebSocket("ws://localhost:8977/ws/file/" + props.sessionInfo.name)
-  directoryStore.fieleOperationObjList.push({
+  directoryStore.fileOperationObjList.push({
     uniqId: props.sessionInfo.name,
     fileList: [],
     currentPath: '/',

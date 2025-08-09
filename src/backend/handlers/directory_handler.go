@@ -70,6 +70,25 @@ func HandleDirectory(w http.ResponseWriter, r *http.Request) {
 	sort.Slice(dir, func(i, j int) bool {
 		return dir[i].Name() < dir[j].Name()
 	})
+	// 手动添加 "." 和 ".." 项
+	fileList = append(fileList, FileItem{
+		IsDir:   true,
+		Name:    ".",
+		Size:    0,
+		Mode:    "drwxr-xr-x", // 模拟目录权限
+		ModTime: time.Now().Format("2006-01-02 15:04:05"),
+	})
+
+	// 如果不是根目录，添加 ".." 项
+	if initialPath != "/" {
+		fileList = append(fileList, FileItem{
+			IsDir:   true,
+			Name:    "..",
+			Size:    0,
+			Mode:    "drwxr-xr-x", // 模拟目录权限
+			ModTime: time.Now().Format("2006-01-02 15:04:05"),
+		})
+	}
 
 	for _, file := range dir {
 		fileList = append(fileList, FileItem{
@@ -147,6 +166,50 @@ func handleDirectoryFile(upgrade *websocket.Conn, client *sshClient) {
 }
 func toGetPathFile(sftpRequest *SftpRequest, client *sshClient, upgrade *websocket.Conn) error {
 	log.Println("获取路径下的所有文件")
+	var fileList []FileItem
+	dir, err := client.sftpClient.ReadDir(sftpRequest.Path)
+	if err != nil {
+		log.Println("获取当前目录失败", err)
+	}
+	sort.Slice(dir, func(i, j int) bool {
+		return dir[i].Name() < dir[j].Name()
+	})
+
+	// 手动添加 "." 和 ".." 项
+	fileList = append(fileList, FileItem{
+		IsDir:   true,
+		Name:    ".",
+		Size:    0,
+		Mode:    "drwxr-xr-x", // 模拟目录权限
+		ModTime: time.Now().Format("2006-01-02 15:04:05"),
+	})
+
+	// 如果不是根目录，添加 ".." 项
+	if sftpRequest.Path != "/" {
+		fileList = append(fileList, FileItem{
+			IsDir:   true,
+			Name:    "..",
+			Size:    0,
+			Mode:    "drwxr-xr-x", // 模拟目录权限
+			ModTime: time.Now().Format("2006-01-02 15:04:05"),
+		})
+	}
+
+	for _, file := range dir {
+		fileList = append(fileList, FileItem{
+			IsDir:   file.IsDir(),
+			Name:    file.Name(),
+			Size:    file.Size(),
+			Mode:    file.Mode().String(),
+			ModTime: time.Time.Format(file.ModTime(), "2006-01-02 15:04:05"),
+		})
+	}
+	//websocket连接时发送当前目录信息
+	log.Println("返回的fileList:", fileList)
+	err = upgrade.WriteJSON(fileList)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 func toUploadFile(sftpRequest *SftpRequest, client *sshClient) error {

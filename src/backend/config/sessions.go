@@ -33,7 +33,7 @@ type SessionGroup struct {
 	SessionList []*Session `json:"sessionList"`
 }
 
-// 加载session.json文件
+// LoadSessions 加载session.json文件
 func LoadSessions() {
 	//获取AppData路径
 	appDataPath, err := os.UserConfigDir()

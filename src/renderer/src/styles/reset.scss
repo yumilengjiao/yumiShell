@@ -88,6 +88,14 @@ video {
   overflow-y: hidden;
   overflow-x: hidden;
   box-sizing: border-box;
+  // 去除下划线
+  text-decoration: none;
+  // 继承父元素颜色
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+  font-weight: normal;
+  font-style: normal;
+  outline: none;
 }
 
 /* 全局盒模型设置*/

@@ -1,6 +1,6 @@
 <template>
   <div class="file-item" @dragover="handleDragOver" @dragleave="handleDragLeave" @dragenter="handleDragEnter"
-    @drop="handleDrop" ref="fileItemRef">
+    @click="enterDirectory" @drop="handleDrop" ref="fileItemRef">
     <svg v-if="props.item.isDir" t="1754619954211" class="icon" viewBox="0 0 1024 1024" version="1.1"
       xmlns="http://www.w3.org/2000/svg" p-id="1673" width="50" height="50">
       <path
@@ -36,9 +36,12 @@ import { ref } from 'vue'
 import { useDirectoryStore } from '@renderer/stores/useDirectoryStore'
 import { SftpRequest } from '@renderer/types/sftp'
 
+const DOUBLE_CLICK_THRESHOLD = 300
 const props = defineProps(['item'])
 const fileItemRef = ref<HTMLDivElement>()
 const directoryStore = useDirectoryStore()
+//定义一个起始时间的变量
+let lastClickTime = ref<number>(0)
 
 //拖拽进入时的处理方法
 const handleDragEnter = (e: DragEvent) => {
@@ -97,6 +100,46 @@ const handleDrop = (e: DragEvent) => {
     // 获取现在的websocket发送请求
     directoryStore.currentOperationObj?.websocket?.send(JSON.stringify(sftpOnj))
   })
+}
+//双击文件夹进入
+const enterDirectory = () => {
+  if (!props.item.isDir) return
+  //判断是否是双击
+  const currentTime = Date.now();
+  const isDoubleClick = (currentTime - lastClickTime.value) < DOUBLE_CLICK_THRESHOLD;
+  lastClickTime.value = currentTime;
+  // 仅在双击时执行操作
+  if (isDoubleClick) {
+    //改变当前路径
+    if (props.item.name === '..') {
+      //返回上一级
+      const currentPath = directoryStore.currentOperationObj!.currentPath
+      currentPath.lastIndexOf('/')
+      directoryStore.currentOperationObj!.currentPath = currentPath.slice(0, currentPath.lastIndexOf('/'))
+      if (currentPath.lastIndexOf('/') === 0) {
+        directoryStore.currentOperationObj!.currentPath = '/'
+      }
+      //发送请求
+      directoryStore.currentOperationObj?.websocket?.send(JSON.stringify({
+        requestType: 'get',
+        path: directoryStore.currentOperationObj!.currentPath,
+      }))
+      return
+    }
+    if (props.item.name === '.') {
+      //返回当前目录
+      return
+    }
+    if (directoryStore.currentOperationObj!.currentPath === '/') {
+      directoryStore.currentOperationObj!.currentPath = directoryStore.currentOperationObj!.currentPath + props.item.name
+    } else {
+      directoryStore.currentOperationObj!.currentPath = directoryStore.currentOperationObj!.currentPath + "/" + props.item.name
+    }
+    directoryStore.currentOperationObj?.websocket?.send(JSON.stringify({
+      requestType: 'get',
+      path: directoryStore.currentOperationObj!.currentPath,
+    }))
+  }
 }
 // 添加文件读取工具函数
 const readFileAsBase64 = (file: File): Promise<string> => {
