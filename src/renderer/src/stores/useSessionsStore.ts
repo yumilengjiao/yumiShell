@@ -1,6 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { defineStore } from 'pinia'
 import { Session, SessionGroup } from '@renderer/types/session'
+import { session } from 'electron';
 
 interface DisplayGroup {
   id: string;
@@ -13,7 +14,6 @@ interface DisplaySession {
 }
 //定义一个非响应式sessionGroup组用来存放所有有关session的信息
 let sessionGroups: SessionGroup[] = []
-
 export const useSessionsStore = defineStore('sessions', () => {
   // 定义一个状态变量，用于存储用于展示的会话组
   const sessions = ref<DisplayGroup[]>([
@@ -95,6 +95,35 @@ export const useSessionsStore = defineStore('sessions', () => {
       }))
     }))
   }
+  //删除session
+  const deleteSession = (sessionId: string) => {
+    console.log("删除的sessionId", sessionId);
+    console.log(sessionGroups);
+    let deleteParent = sessionGroups.some(group => sessionId === group.id)
+    console.log("删除的是否是父组", deleteParent);
+    if (deleteParent) {
+      sessionGroups = sessionGroups.filter(group => group.id !== sessionId)
+      console.log("删除的是父组", sessionGroups);
+    } else {
+      sessionGroups.forEach(group => {
+        group.sessionList = group.sessionList.filter(session => session.id !== sessionId)
+      })
+    }
+    console.log("删除后的sessionGroups", sessionGroups);
+    //再次存储sessionGroups
+    window.api.saveSessions(sessionGroups)
+    console.log("删除成功");
+
+    //更新用于显示的sessionGroups
+    sessions.value = sessionGroups.map(group => ({
+      id: group.id,
+      label: group.label,
+      children: group.sessionList.map(session => ({
+        id: session.id,
+        label: session.labelName,
+      }))
+    }))
+  }
   //使用该仓库的组件挂载时
   onMounted(async () => {
     sessionGroups = await window.api.readSessions()
@@ -109,10 +138,12 @@ export const useSessionsStore = defineStore('sessions', () => {
     }))
     console.log(sessionGroups);
   })
+
   return {
     sessions,
     addGroup,
     addSession,
-    saveSessions
+    saveSessions,
+    deleteSession
   }
 })

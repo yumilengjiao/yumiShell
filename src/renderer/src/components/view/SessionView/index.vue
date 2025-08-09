@@ -10,8 +10,9 @@
       </template>
     </tiny-dialog-box>
     <!-- 展示当前会话 -->
-    <tiny-tree-menu :default-expand-all="true" :show-filter="false" :data="sessionsStore.sessions" ellipsis draggable
-      @node-click="handleNodeClick" @node-drag-start="handleDragStart" empty-text="null sessions" style="width: 100%;">
+    <tiny-tree-menu :allow-drop="() => false" :default-expand-all="true" :show-filter="false"
+      :data="sessionsStore.sessions" ellipsis draggable @node-click="handleNodeClick" @node-drag-start="handleDragStart"
+      empty-text="null sessions" style="width: 100%;">
       <template #default="slotScope">
         <button class="addSession" v-if="slotScope.data.children"
           @click.stop="sessionAddControl(slotScope.data.id)">+</button>
@@ -58,8 +59,15 @@
         <tiny-button type="primary" @click="addSession" round>确定</tiny-button>
       </template>
     </tiny-dialog-box>
-    <tiny-button class="deleteModel" ref="rubbishBtn" size="large" :icon="IconDeleteL" circle @click="deleteSessions"
-      @drop="handleDrop" @dragover="handleDragOver"></tiny-button>
+    <div class="rubbish-btn" title="拖拽session到此处删除" @dragenter="handleDragEnter" @dragover="handleDragOver"
+      @dragleave="handleDragLeave" @drop="handleDrop" ref="rubbish">
+      <svg t="1754706097154" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+        p-id="4603" width="50" height="50">
+        <path
+          d="M853.333333 213.333333a42.666667 42.666667 0 0 1 3.2 85.226667L853.333333 298.666667H170.666667a42.666667 42.666667 0 0 1-3.2-85.226667L170.666667 213.333333h682.666666z m-42.666666 149.333334a42.666667 42.666667 0 0 1 42.56 39.466666L853.333333 405.333333v384a170.666667 170.666667 0 0 1-165.333333 170.581334L682.666667 960H341.333333a170.666667 170.666667 0 0 1-170.581333-165.333333L170.666667 789.333333V405.333333a42.666667 42.666667 0 0 1 85.226666-3.2L256 405.333333v384a85.333333 85.333333 0 0 0 81.066667 85.226667L341.333333 874.666667h341.333334a85.333333 85.333333 0 0 0 85.226666-81.066667L768 789.333333V405.333333a42.666667 42.666667 0 0 1 42.666667-42.666666z m-405.333334 64a42.666667 42.666667 0 0 1 42.56 39.466666L448 469.333333v256a42.666667 42.666667 0 0 1-85.226667 3.2L362.666667 725.333333V469.333333a42.666667 42.666667 0 0 1 42.666666-42.666666z m213.333334 0a42.666667 42.666667 0 0 1 42.56 39.466666L661.333333 469.333333v256a42.666667 42.666667 0 0 1-85.226666 3.2L576 725.333333V469.333333a42.666667 42.666667 0 0 1 42.666667-42.666666zM597.333333 64a42.666667 42.666667 0 0 1 3.2 85.226667L597.333333 149.333333h-170.666666a42.666667 42.666667 0 0 1-3.2-85.226666L426.666667 64h170.666666z"
+          fill="#2c2c2c" p-id="4604"></path>
+      </svg>
+    </div>
   </div>
 </template>
 
@@ -67,16 +75,12 @@
 import { ref } from 'vue'
 import { useSessionsStore } from '@renderer/stores/useSessionsStore'
 import type { Session } from '@renderer/types/session'
-import { iconDeleteL } from '@opentiny/vue-icon'
 import { useShellViewTabStore } from '@renderer/stores/useShellViewTabStore'
-import { useDirectoryStore } from '@renderer/stores/useDirectoryStore'
 // 存储上次点击的时间戳
 let lastClickTime = 0;
 // 双击阈值（毫秒）
 const DOUBLE_CLICK_THRESHOLD = 300;
-const directoryStore = useDirectoryStore()
 const shellViewTabStore = useShellViewTabStore()
-const IconDeleteL = iconDeleteL()
 const sessionsStore = useSessionsStore()
 //这是添加自定义组的dialog-box  
 const boxVisibility = ref(false)
@@ -87,7 +91,7 @@ const currentGroupId = ref('')
 //组名
 const groupName = ref('')
 //垃圾桶实例
-const rubbishBtn = ref()
+const rubbish = ref<HTMLDivElement>()
 //表单接收的对象
 const sessionData = ref<Session>({
   id: '',
@@ -105,7 +109,6 @@ const sessionData = ref<Session>({
 const willDeleteSession = ref<any>()
 // 定义单选框的值
 let isIpv4 = ref(true);
-
 //添加会话的控制函数
 const sessionAddControl = (groupId: string) => {
   sessionBoxVisibility.value = true
@@ -149,24 +152,44 @@ const addGroup = () => {
 }
 //处理拖拽到垃圾桶的事件
 const handleDragOver = (e: DragEvent) => {
-  console.log(e);
+  // 阻止默认行为，允许 Drop
   e.preventDefault()
 }
 //处理拖拽开始的事件
 const handleDragStart = (e: any) => {
-  console.log(e);
+  // console.log(e);
   willDeleteSession.value = e.data
   console.log(willDeleteSession.value);
 }
 //处理拖拽松手垃圾桶的事件
 const handleDrop = (e: DragEvent) => {
   console.log(willDeleteSession.value);
-  console.log(sessionsStore.sessions);
-
+  deleteSessions(willDeleteSession.value)
+  //清空willDeleteSession
+  willDeleteSession.value = null
+  //清空垃圾桶的样式
+  rubbish.value?.classList.remove('dragover')
 }
 //处理删除session
 const deleteSessions = (willDeleteSession) => {
   //遍历仓库的数据查看树id是否一致，一致就删除
+  sessionsStore.deleteSession(willDeleteSession.id)
+}
+//处理拖拽进入垃圾桶的事件
+const handleDragEnter = (e: DragEvent) => {
+  console.log("拖拽进入");
+  // 阻止默认行为，允许 Drop
+  e.preventDefault()
+  // 显示垃圾桶
+  rubbish.value?.classList.add('dragover')
+}
+//处理拖拽离开垃圾桶的事件
+const handleDragLeave = (e: DragEvent) => {
+  console.log(e);
+  // 阻止默认行为，允许 Drop
+  e.preventDefault()
+  // 显示垃圾桶
+  rubbish.value?.classList.remove('dragover')
 }
 const handleNodeClick = (nodeData, node) => {
   //父节点点击无效
@@ -216,10 +239,41 @@ const handleNodeClick = (nodeData, node) => {
     justify-content: center;
   }
 
-  .deleteModel {
+  .rubbish-btn {
     position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
     bottom: 10px;
     right: 10px;
+    border: 1px solid var(--base-border-color);
+    border-radius: 50%;
+
+    .icon {
+      path {
+        fill: var(--base-text-color);
+      }
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(223, 32, 86, 0.5);
+      z-index: 1;
+      //默认隐藏
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
+    &.dragover::after {
+      opacity: 1 !important;
+      /* 拖拽时显示 */
+    }
+
   }
 
 }
