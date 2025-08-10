@@ -14,7 +14,6 @@
         </tiny-col>
         <tiny-col :span="4">
           <SessionView v-show="toolBarStore.nowToolBarModel === 'session'" />
-          <SettingView v-show="toolBarStore.nowToolBarModel === 'setting'" />
           <FileView v-show="toolBarStore.nowToolBarModel === 'file'" />
         </tiny-col>
         <tiny-col :span="19">
@@ -28,7 +27,6 @@
 <script setup>
 import { TinyLayout, TinyRow, TinyCol } from '@opentiny/vue'
 import FileView from '@renderer/components/view/FileView/index.vue'
-import SettingView from '@renderer/components/view/settingView/index.vue'
 import SessionView from '@renderer/components/view/SessionView/index.vue'
 import ShellTabBar from '@renderer/components/ShellTabBar/index.vue'
 import MenuBar from '@renderer/components/MenuBar/index.vue'

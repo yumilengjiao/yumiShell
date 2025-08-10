@@ -58,6 +58,7 @@ func OtherHandler(w http.ResponseWriter, r *http.Request) {
 
 // 重新调整所有终端的窗口大小
 func resizeTerminal(row, col int) {
+	log.Println("重新调整终端窗口大小", row, col)
 	mutex.Lock()
 	for _, value := range sshClientList {
 		err := value.session.WindowChange(row, col)

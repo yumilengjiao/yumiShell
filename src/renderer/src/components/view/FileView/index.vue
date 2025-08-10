@@ -5,7 +5,18 @@
     </div>
     <div class="file-list">
       <FileItem v-for="(item, index) in currentOperationObj?.fileList" :key="index" :item="item" />
+      <div class="default-view" v-if="currentOperationObj?.fileList.length === 0 || currentOperationObj == undefined">
+        <svg t="1754743743438" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+          p-id="11570" width="200" height="200">
+          <path d="M609.52381 97.52381H560.761905v243.809523h243.809524V292.571429h-195.047619z" fill="#A6A6A6"
+            p-id="11571"></path>
+          <path
+            d="M659.260952 0H121.904762v1024h780.190476V228.547048L659.260952 0z m190.805334 975.238095H173.933714V48.761905h463.872l212.260572 199.923809V975.238095z"
+            fill="#A6A6A6" p-id="11572"></path>
+        </svg>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -100,6 +111,16 @@ const handleDirectoryClick = (item: string) => {
     &::-webkit-scrollbar {
       display: none;
     }
+
+    .default-view {
+      height: 100%;
+      width: 100%;
+      background-color: var(--base-background-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
   }
 }
 </style>

@@ -1,21 +1,38 @@
 :root {
   --base-background-color: #efefef;
-  --base-shell-bg-color: #efefef;
+  --base-shell-bg-color: #0e0e0e;
   --base-menu-background-color: #b3b3b3;
   --base-text-color: #000000;
   --base-border-color: #000000;
   --base-toolbar-background-color: #383838;
-  --base-border-hover-color: #444444;
   --base-directory-background-color: #f5e0e0;
+  --base-show-box-background-color: #f2f2f2;
+  --base-shadow-color: rgba(0, 0, 0, 0.4);
+  --base-button-background-color: #191919;
+  --base-button-text-color: #ffffff;
+  --base-shell-opacity: 0.95;
 }
+
 
 :root.dark {
   --base-background-color: #0e0e0e;
   --base-menu-background-color: #2f2f2f;
-  --base-shell-bg-color: #0e0e0e;
   --base-text-color: #ffffff;
   --base-border-color: #d5d5d5;
   --base-toolbar-background-color: #b9b9b9;
-  --base-border-hover-color: #1c1c1c;
   --base-directory-background-color: #333333;
+  --base-show-box-background-color: #2b2b2b;
+  --base-shadow-color: rgba(196, 196, 196, 0.3);
+  --base-button-background-color: #e6e6e6;
+  --base-button-text-color: #000000;
+}
+
+:root.theme {
+  --base-background-color: var(--theme-background-color, #efefef);
+  --base-menu-background-color: var(--theme-menu-bg-color, #b3b3b3);
+  --base-text-color: var(--theme-text-color, #000000);
+  --base-border-color: var(--theme-border-color, #000000);
+  --base-toolbar-background-color: var(--theme-toolbar-bg-color, #383838);
+  --base-directory-background-color: var(--theme-directory-bg-color, #f5e0e0);
+  --base-show-box-background-color: var(--theme-show-box-bg-color, #f2f2f2);
 }

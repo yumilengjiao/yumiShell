@@ -5,6 +5,7 @@ import fs from 'fs'
 import icon from '../../resources/icon.png?asset'
 import { SessionGroup } from './types/session'
 import { installExtension, VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+import { Config } from './types/configType'
 
 let win: BrowserWindow | null = null
 function createWindow(): void {
@@ -58,6 +59,20 @@ const windowedWindow = () => {
   //窗口在屏幕中央
   win?.setPosition(100, 50)
 }
+const saveConfigFile = (config: Config) => {
+  fs.writeFileSync(join(app.getPath('userData'), 'config.json'), JSON.stringify(config))
+}
+// 加载配置文件
+const loadConfigFile = () => {
+  try {
+    const config = fs.readFileSync(join(app.getPath('userData'), 'config.json'), 'utf-8')
+    return JSON.parse(config) as Config
+  } catch (error) {
+    console.error('读取文件失败:', error)
+    return null
+  }
+}
+
 //保存用户session的回调
 const saveSessions = (sessions: SessionGroup[]) => {
   //获取用户数据目录
@@ -79,13 +94,11 @@ const saveSessions = (sessions: SessionGroup[]) => {
 //读取用户session的回调
 const readSessions = () => {
   const userDataPath = app.getPath('userData');
-  const sessionsPath = join(userDataPath, 'sessions.json');
   try {
     // 确保目录存在
     if (!fs.existsSync(userDataPath)) {
       fs.mkdirSync(userDataPath, { recursive: true });
     }
-
     const data = fs.readFileSync(join(app.getPath('userData'), 'sessions.json'), 'utf-8')
     return JSON.parse(data) as SessionGroup[]
   } catch (error) {
@@ -124,6 +137,15 @@ app.on('ready', () => {
   ipcMain.handle('read-sessions', (event) => {
     return readSessions()
   })
+  //监听渲染进程发送的保存配置事件
+  ipcMain.on('save-config', (event, config) => {
+    saveConfigFile(config)
+  })
+  // 监听渲染进程发送的加载配置事件
+  ipcMain.handle('load-config', (event) => {
+    return loadConfigFile()
+  })
+
   createWindow()
 
   app.on('activate', function () {

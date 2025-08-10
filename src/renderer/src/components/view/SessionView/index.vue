@@ -12,7 +12,10 @@
     <!-- 展示当前会话 -->
     <tiny-tree-menu :allow-drop="() => false" :default-expand-all="true" :show-filter="false"
       :data="sessionsStore.sessions" ellipsis draggable @node-click="handleNodeClick" @node-drag-start="handleDragStart"
-      empty-text="null sessions" style="width: 100%;">
+      empty-text="null sessions"
+      style="width: 100%;box-shadow: 0 0 10px var(--base-shadow-color);background-color: var(--base-background-color);">
+
+
       <template #default="slotScope">
         <button class="addSession" v-if="slotScope.data.children"
           @click.stop="sessionAddControl(slotScope.data.id)">+</button>
@@ -24,34 +27,40 @@
     <!-- 添加session的表单 -->
     <tiny-dialog-box :show-close="false" v-model:visible="sessionBoxVisibility" title="Add new session" width="70%">
       <tiny-form label-width="100px" label-position="left">
-        <tiny-form-item label="labelName">
+        <tiny-form-item label="labelName" title="labelName">
           <tiny-input type="text" v-model="sessionData.labelName"></tiny-input>
         </tiny-form-item>
-        <tiny-form-item label="host">
+        <tiny-form-item label="host" title="host">
           <tiny-ip-address v-if="isIpv4" v-model="sessionData.host"></tiny-ip-address>
           <tiny-ip-address type="ipv6" v-if="!isIpv4" v-model="sessionData.host"></tiny-ip-address>
           <br>
           <tiny-radio v-model="isIpv4" :label="true">IPv4</tiny-radio>
           <tiny-radio v-model="isIpv4" :label="false">IPv6</tiny-radio>
         </tiny-form-item>
-        <tiny-form-item label="port">
+        <tiny-form-item label="port" title="port">
           <tiny-numeric min="0" max="65535" v-model="sessionData.port" placeholder="请输入非空数值"
             style="width: 30%;"></tiny-numeric>
         </tiny-form-item>
-        <tiny-form-item label="username">
+        <tiny-form-item label="username" title="username">
           <tiny-input type="text" v-model="sessionData.username"></tiny-input>
         </tiny-form-item>
-        <tiny-form-item label="authType">
+        <tiny-form-item label="authType" title="authType">
           <tiny-radio-group v-model="sessionData.authType">
             <tiny-radio :label="'password'">password</tiny-radio>
             <tiny-radio :label="'privateKey'">privateKey</tiny-radio>
           </tiny-radio-group>
         </tiny-form-item>
-        <tiny-form-item label="password">
+        <tiny-form-item label="password" title="password">
           <tiny-input type="password" v-model="sessionData.password"></tiny-input>
         </tiny-form-item>
-        <tiny-form-item label="timeOut">
+        <tiny-form-item label="timeOut" title="timeOut">
           <tiny-input type="text" v-model="sessionData.timeout"></tiny-input>
+        </tiny-form-item>
+        <tiny-form-item label="ptyType" title="ptyType">
+          <tiny-base-select v-model="sessionData.terminalType">
+            <tiny-option v-for="item in termType" :key="item.value" :label="item.label" :value="item.value">
+            </tiny-option>
+          </tiny-base-select>
         </tiny-form-item>
       </tiny-form>
       <template #footer>
@@ -103,8 +112,112 @@ const sessionData = ref<Session>({
   password: '',
   timeout: 20,
   encoding: 'utf-8',
-  terminalType: 'xterm',
+  terminalType: 'xterm-256color',
 })
+//定义伪终端类型的数组
+const termType = ref([
+  {
+    value: 'xterm',
+    label: 'xterm',
+  },
+  {
+    value: 'xterm-256color',
+    label: 'xterm-256color',
+  },
+  {
+    value: 'screen',
+    label: 'screen',
+  },
+  {
+    value: 'screen-256color',
+    label: 'screen-256color',
+  },
+  {
+    value: 'vt100',
+    label: 'vt100',
+  },
+  {
+    value: 'vt220',
+    label: 'vt220',
+  },
+  {
+    value: 'ansi',
+    label: 'ansi',
+  },
+  {
+    value: 'linux',
+    label: 'linux',
+  },
+  {
+    value: 'linux-16color',
+    label: 'linux-16color',
+  },
+  {
+    value: 'rxvt',
+    label: 'rxvt',
+  },
+  {
+    value: 'rxvt-256color',
+    label: 'rxvt-256color',
+  },
+  {
+    value: 'konsole',
+    label: 'konsole',
+  },
+  {
+    value: 'iterm2',
+    label: 'iterm2',
+  },
+  {
+    value: 'wezterm',
+    label: 'wezterm',
+  },
+  {
+    value: 'xterm-direct',
+    label: 'xterm-direct',
+  },
+  {
+    value: 'tmux-direct',
+    label: 'tmux-direct',
+  },
+  {
+    value: 'cygwin',
+    label: 'cygwin',
+  },
+  {
+    value: 'putty',
+    label: 'putty',
+  },
+  {
+    value: 'Eterm',
+    label: 'Eterm',
+  },
+  {
+    value: 'aterm',
+    label: 'aterm',
+  },
+  {
+    value: 'dtterm',
+    label: 'dtterm',
+  },
+  {
+    value: 'xterm-new',
+    label: 'xterm-new',
+  },
+  {
+    value: 'gnome',
+    label: 'gnome',
+  },
+  {
+    value: 'st-256color',
+    label: 'st-256color',
+  },
+  {
+    value: 'alacritty',
+    label: 'alacritty',
+  }
+])
+
 //定义将要删除的session
 const willDeleteSession = ref<any>()
 // 定义单选框的值
@@ -162,7 +275,7 @@ const handleDragStart = (e: any) => {
   console.log(willDeleteSession.value);
 }
 //处理拖拽松手垃圾桶的事件
-const handleDrop = (e: DragEvent) => {
+const handleDrop = () => {
   console.log(willDeleteSession.value);
   deleteSessions(willDeleteSession.value)
   //清空willDeleteSession

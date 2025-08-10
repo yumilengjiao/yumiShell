@@ -13,13 +13,16 @@
         ref="shellView" />
     </template>
     <div class="default-view" v-if="tabs.length === 0">
-      <h1 style="color: var(--base-text-color);font-weight: 400;">Please add your session</h1>
+      <div class="default-view-content">
+        <span class="title">Welcome to YumiShell</span>
+        <span class="description">😁please click the new tab button to create a new tab😁</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, watch } from 'vue'
 import ShellView from '@renderer/components/ShellView/index.vue'
 import { useShellViewTabStore } from '@renderer/stores/useShellViewTabStore'
 import { computed } from 'vue'
@@ -36,6 +39,9 @@ watch(activeName, (newVal) => {
 })
 
 const closeTab = (name) => {
+  if (name == activeName.value) {
+    activeName.value = tabs.value[0]?.name
+  }
   shellViewTabStore.closeTab(name)
 }
 </script>
@@ -50,6 +56,39 @@ const closeTab = (name) => {
     height: 100%;
     width: 100%;
     background-color: var(--base-background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .default-view-content {
+      height: 85%;
+      width: 90%;
+      background-color: var(--base-show-box-background-color);
+      border-radius: 10px;
+      box-shadow: 0 0 10px var(--base-shadow-color);
+
+      .title {
+        display: flex;
+        justify-self: center;
+        margin-top: 10%;
+        font-size: 48px;
+        font-weight: 500;
+        color: var(--base-text-color);
+      }
+
+      .description {
+        display: flex;
+        justify-self: center;
+        margin-top: 10%;
+        font-size: 24px;
+        font-weight: 500;
+        color: var(--base-text-color);
+      }
+
+
+    }
+
+
   }
 
   .tiny-tabs {

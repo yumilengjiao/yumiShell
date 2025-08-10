@@ -16,6 +16,10 @@ import { FitAddon } from '@xterm/addon-fit'
 import { WebglAddon } from '@xterm/addon-webgl'
 //导入终端信息存储
 import { useTerminalStore } from '@renderer/stores/useTerminalStore'
+//导入配置store
+import { useConfigStore } from '@renderer/stores/useConfigStore'
+//导入其他连接store
+import { useOtherConnStore } from '@renderer/stores/useOtherConnStore'
 //导入xterm样式
 import '@xterm/xterm/css/xterm.css'
 //xterm的容器
@@ -26,6 +30,8 @@ const fitAddon = new FitAddon()
 const webglAddon = new WebglAddon()
 const terminalStore = useTerminalStore()
 const directoryStore = useDirectoryStore()
+const configStore = useConfigStore()
+const otherConnStore = useOtherConnStore()
 
 //用于处理交互的websocket
 let terminalWebsocket: WebSocket
@@ -35,10 +41,15 @@ let xterm: Terminal;
 const props = defineProps(['activeName', 'sessionInfo'])
 onMounted(() => {
   xterm = new Terminal({
-    cursorBlink: false,
+    cursorBlink: configStore.config.basicConfig.isBlink,
     allowTransparency: true,
     rows: 34,
-    cols: 90
+    cols: 90,
+    theme: {
+      foreground: configStore.config.basicConfig.shellTextColor,
+      background: configStore.config.basicConfig.shellBgColor,
+      cursor: configStore.config.basicConfig.cursorColor,
+    }
   });
   xterm.open(container.value!);
   //添加调整大小插件
@@ -52,9 +63,31 @@ onMounted(() => {
   xterm.onData((data) => {
     terminalWebsocket.send(data)
   })
+  // 2) 复制：监听鼠标松开事件
+  xterm.onSelectionChange(() => {
+    const selected = xterm.getSelection();
+    if (selected) {
+      navigator.clipboard.writeText(selected);
+    }
+  });
+
+  // 3) 粘贴：监听右键菜单或 Ctrl+Shift+V
+  xterm.element?.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    navigator.clipboard.readText().then(text => xterm.paste(text));
+  });
+
+  // 4) 可选：键盘粘贴（Ctrl+Shift+V）
+  xterm.attachCustomKeyEventHandler((e) => {
+    if (e.ctrlKey && e.shiftKey && e.code === 'KeyV') {
+      navigator.clipboard.readText().then(text => xterm.paste(text));
+      return false; // 阻止默认
+    }
+    return true;
+  });
   window.addEventListener('resize', handleResize)
 })
-
+//监听活动会话变化
 watch(() => props.activeName, (newVal, oldVal) => {
   if (newVal == oldVal) {
     return
@@ -62,6 +95,16 @@ watch(() => props.activeName, (newVal, oldVal) => {
   nextTick(() => {
     xterm.resize(terminalStore.currentcols, terminalStore.currentrows)
   })
+})
+//处理变化的配置
+watch(() => configStore.config, (newVal) => {
+  console.log("config改变", newVal);
+  xterm.options.cursorBlink = newVal.basicConfig.isBlink
+  xterm.options.theme!.foreground = newVal.basicConfig.shellTextColor
+  xterm.options.theme!.background = newVal.basicConfig.shellBgColor
+  xterm.options.theme!.cursor = newVal.basicConfig.cursorColor
+}, {
+  deep: true
 })
 
 
@@ -71,6 +114,15 @@ const handleResize = (e) => {
     fitAddon.fit();
     terminalStore.currentcols = xterm.cols
     terminalStore.currentrows = xterm.rows
+    //调整后端pty大小
+    otherConnStore.ws.send(JSON.stringify({
+      reqType: 'fitness',
+      content: {
+        row: xterm.rows,
+        col: xterm.cols,
+      }
+    }))
+
   }
 }
 const initWebsocket = () => {
@@ -107,12 +159,13 @@ const handleWebsocket = () => {
 .shell {
   width: 100%;
   height: 100%;
+  background-color: var(--base-shell-bg-color);
+  opacity: var(--base-shell-opacity);
+  padding: 5px;
 
   .shell-container {
     width: 100%;
     height: 100%;
-    background: var(--base-shell-bg-color);
-    opacity: 0.95;
   }
 }
 </style>

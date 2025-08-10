@@ -10,6 +10,8 @@ declare global {
       windowedWindow: () => void
       saveSessions: (sessions: SessionGroup[]) => void
       readSessions: () => Promise<SessionGroup[]>
+      saveConfig: (config: Config) => void
+      loadConfig: () => Promise<Config>
     }
   }
 }
