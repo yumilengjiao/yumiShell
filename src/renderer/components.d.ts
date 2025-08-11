@@ -22,6 +22,7 @@ declare module 'vue' {
     TinyBaseSelect: typeof import('@opentiny/vue-base-select')['default']
     TinyButton: typeof import('@opentiny/vue-button')['default']
     TinyDialogBox: typeof import('@opentiny/vue-dialog-box')['default']
+    TinyFileUpload: typeof import('@opentiny/vue-file-upload')['default']
     TinyForm: typeof import('@opentiny/vue-form')['default']
     TinyFormItem: typeof import('@opentiny/vue-form-item')['default']
     TinyInput: typeof import('@opentiny/vue-input')['default']

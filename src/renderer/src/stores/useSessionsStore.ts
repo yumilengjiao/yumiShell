@@ -59,6 +59,7 @@ export const useSessionsStore = defineStore('sessions', () => {
   }
   //用于持久化存储sessionGroups
   const saveSessions = (sessionGroupId: string, groupName: string, sessionData: any) => {
+    console.log("sessionData要储存的privateKey是", sessionData.privateKey);
     console.log("传入的sessionGroupId", sessionGroupId, "groupName", groupName, "sessionData", sessionData);
     console.log("当前sessionGroups为", sessionGroups);
     const group = sessionGroups.find(group => group.id == sessionGroupId)
@@ -74,6 +75,8 @@ export const useSessionsStore = defineStore('sessions', () => {
         username: sessionData.username,
         authType: sessionData.authType,
         password: sessionData.password,
+        privateKey: sessionData.privateKey,
+        passphrase: sessionData.passphrase,
         timeout: sessionData.timeout,
         encoding: sessionData.encoding,
         terminalType: sessionData.terminalType,

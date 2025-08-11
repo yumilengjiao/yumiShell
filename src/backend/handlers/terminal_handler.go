@@ -76,9 +76,23 @@ func HandleTerminal(w http.ResponseWriter, r *http.Request) {
 
 // 初始化sshClient
 func initSshClient(session *config.Session) (*sshClient, error) {
+	var key ssh.Signer
+	var err error
+	if session.Passphrase != "" {
+		key, err = ssh.ParsePrivateKeyWithPassphrase([]byte(session.PrivateKey), []byte(session.Passphrase))
+		if err != nil {
+			log.Println("密钥解析失败")
+		}
+	} else {
+		key, err = ssh.ParsePrivateKey([]byte(session.PrivateKey))
+		if err != nil {
+			log.Println("密钥解析失败")
+		}
+	}
 	sshConfig := ssh.ClientConfig{
 		User: session.Username,
 		Auth: []ssh.AuthMethod{
+			ssh.PublicKeys(key),
 			ssh.Password(session.Password),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),

@@ -3,21 +3,23 @@
     <Hr content="basicSetting" percent="10%" />
     <div class="form">
       <FormItem label="username">
-        <tiny-input v-model="configStore.config.basicConfig.username" placeholder="请输入用户名" />
+        <tiny-input v-model="configStore.config.basicConfig.username" placeholder="please input username" />
       </FormItem>
       <FormItem label="shellOpacity">
         <input type="range" min="0" max="1" step="0.01" v-model="configStore.config.basicConfig.shellOpacity">
         {{ configStore.config.basicConfig.shellOpacity }}
       </FormItem>
       <FormItem label="shellBgColor">
-        <input type="color" placeholder="请输入" v-model="configStore.config.basicConfig.shellBgColor">
+        <input type="color" placeholder="please input shell bg color"
+          v-model="configStore.config.basicConfig.shellBgColor">
       </FormItem>
       <FormItem label="shellTextColor">
-        <input type="color" placeholder="请输入" v-model="configStore.config.basicConfig.shellTextColor">
+        <input type="color" placeholder="please input shell text color"
+          v-model="configStore.config.basicConfig.shellTextColor">
       </FormItem>
       <FormItem label="shellCursorColor">
-
-        <input type="color" placeholder="请输入" v-model="configStore.config.basicConfig.cursorColor">
+        <input type="color" placeholder="please input shell cursor color"
+          v-model="configStore.config.basicConfig.cursorColor">
       </FormItem>
       <FormItem label="shellCursorBlink">
         <tiny-radio v-model="configStore.config.basicConfig.isBlink" label="true">是</tiny-radio>
@@ -27,25 +29,29 @@
     <Hr content="themeSetting" percent="10%" />
     <div class="form">
       <FormItem label="backgroundColor">
-        <input type="color" placeholder="请输入" v-model="configStore.config.theme.backgroundColor">
+        <input type="color" placeholder="please input background color"
+          v-model="configStore.config.theme.backgroundColor">
       </FormItem>
       <FormItem label="menuBgColor">
-        <input type="color" placeholder="请输入" v-model="configStore.config.theme.menuBgColor">
+        <input type="color" placeholder="please input menu bg color" v-model="configStore.config.theme.menuBgColor">
       </FormItem>
       <FormItem label="textColor">
-        <input type="color" placeholder="请输入" v-model="configStore.config.theme.textColor">
+        <input type="color" placeholder="please input text color" v-model="configStore.config.theme.textColor">
       </FormItem>
       <FormItem label="borderColor">
-        <input type="color" placeholder="请输入" v-model="configStore.config.theme.borderColor">
+        <input type="color" placeholder="please input border color" v-model="configStore.config.theme.borderColor">
       </FormItem>
       <FormItem label="toolbarBgColor">
-        <input type="color" placeholder="请输入" v-model="configStore.config.theme.toolbarBgColor">
+        <input type="color" placeholder="please input toolbar bg color"
+          v-model="configStore.config.theme.toolbarBgColor">
       </FormItem>
       <FormItem label="directoryBgColor">
-        <input type="color" placeholder="请输入" v-model="configStore.config.theme.directoryBgColor">
+        <input type="color" placeholder="please input directory bg color"
+          v-model="configStore.config.theme.directoryBgColor">
       </FormItem>
       <FormItem label="homeDisplayBoxBgColor">
-        <input type="color" placeholder="请输入" v-model="configStore.config.theme.showBoxBgColor">
+        <input type="color" placeholder="please input home display box bg color"
+          v-model="configStore.config.theme.showBoxBgColor">
       </FormItem>
     </div>
     <Hr content="resetAndSave" percent="10%" />
@@ -53,7 +59,7 @@
       <tiny-button type="primary" @click="resetTheme">reset</tiny-button>
       <tiny-button type="primary" @click="saveTheme">save</tiny-button>
     </div>
-    <div class="btn" style="color: var(--base-text-color);">---保存后生效</div>
+    <div class="btn" style="color: var(--base-text-color);line-height: 30px;">---Take effect after saving---</div>
   </div>
 </template>
 

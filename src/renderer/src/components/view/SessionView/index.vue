@@ -48,8 +48,23 @@
             <tiny-radio :label="'privateKey'">privateKey</tiny-radio>
           </tiny-radio-group>
         </tiny-form-item>
-        <tiny-form-item label="password" title="password">
+        <!-- 密码认证 -->
+        <tiny-form-item label="password" title="password" v-if="sessionData.authType === 'password'">
           <tiny-input type="password" v-model="sessionData.password"></tiny-input>
+        </tiny-form-item>
+        <!-- 私钥认证 -->
+        <tiny-form-item label="privateKey" title="privateKey" v-if="sessionData.authType === 'privateKey'">
+          <tiny-file-upload :data="privateKeyData" ref="uploadRef" :auto-upload="false"
+            @change="handlePrivateKeyUpload">
+            <template #trigger>
+              <tiny-button>点击上传</tiny-button>
+            </template>
+          </tiny-file-upload>
+        </tiny-form-item>
+        <!-- 私钥密码 -->
+        <tiny-form-item label="passphrase" title="passphrase" v-show="sessionData.authType === 'privateKey'"
+          v-if="sessionData.privateKey">
+          <tiny-input type="password" v-model="sessionData.passphrase" placeholder="if has passphrase"></tiny-input>
         </tiny-form-item>
         <tiny-form-item label="timeOut" title="timeOut">
           <tiny-input type="text" v-model="sessionData.timeout"></tiny-input>
@@ -62,8 +77,8 @@
         </tiny-form-item>
       </tiny-form>
       <template #footer>
-        <tiny-button @click="sessionBoxVisibility = false" round>取消</tiny-button>
-        <tiny-button type="primary" @click="addSession" round>确定</tiny-button>
+        <tiny-button @click="sessionBoxVisibility = false" round>Cancel</tiny-button>
+        <tiny-button type="primary" @click="addSession" round>Confirm</tiny-button>
       </template>
     </tiny-dialog-box>
     <div class="rubbish-btn" title="拖拽session到此处删除" @dragenter="handleDragEnter" @dragover="handleDragOver"
@@ -108,10 +123,14 @@ const sessionData = ref<Session>({
   username: '',
   authType: 'password',
   password: '',
+  privateKey: '',
+  passphrase: '',
   timeout: 20,
   encoding: 'utf-8',
   terminalType: 'xterm-256color',
 })
+//定义上传文件的对象
+const privateKeyData = ref<string>()
 //定义伪终端类型的数组
 const termType = ref([
   {
@@ -225,12 +244,12 @@ const sessionAddControl = (groupId: string) => {
   sessionBoxVisibility.value = true
   currentGroupId.value = groupId
   console.log("传入的groupId", groupId);
-
   console.log("当前点击的会话的组id", currentGroupId.value);
 }
 
 //添加会话
 const addSession = () => {
+  console.log("添加会话", sessionData.value);
   sessionsStore.addSession(currentGroupId.value, sessionData.value)
   sessionsStore.saveSessions(currentGroupId.value, groupName.value, sessionData.value)
   //手动重置表单数据
@@ -242,6 +261,8 @@ const addSession = () => {
     username: '',
     authType: 'password',
     password: '',
+    privateKey: '',
+    passphrase: '',
     timeout: 20,
     encoding: 'utf-8',
     terminalType: 'xterm',
@@ -324,6 +345,19 @@ const handleNodeClick = (nodeData, node) => {
     shellViewTabStore.index++;
   }
 }
+//处理私钥上传
+const handlePrivateKeyUpload = (file: any) => {
+  console.log(file);
+  const reader = new FileReader()
+  reader.readAsText(file.raw)
+  reader.onload = () => {
+    privateKeyData.value = reader.result as string
+    console.log(privateKeyData.value);
+    sessionData.value.privateKey = privateKeyData.value
+    console.log(sessionData.value.privateKey);
+  }
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -340,9 +374,13 @@ const handleNodeClick = (nodeData, node) => {
   position: relative;
   color: var(--base-text-color) !important;
 
-  :deep(.tiny-tree-menu .tree-node-name),
+  :deep(.tiny-tree-menu .tree-node-name) {
+    color: var(--base-text-color) !important;
+  }
+
   :deep(.tiny-button) {
     color: var(--base-text-color) !important;
+    background-color: var(--base-background-color);
   }
 
   .addSession {

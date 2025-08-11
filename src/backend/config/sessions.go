@@ -26,6 +26,8 @@ type Session struct {
 	Username     string `json:"username"`
 	AuthType     string `json:"authType"`
 	Password     string `json:"password"`
+	PrivateKey   string `json:"privateKey"`
+	Passphrase   string `json:"passphrase"`
 	TimeOut      int    `json:"timeOut"`
 	Encoding     string `json:"encoding"`
 	TerminalType string `json:"terminalType"`

@@ -12,9 +12,9 @@ export interface Session {
   // 会话认证类型
   authType: 'password' | 'privateKey';
   // 会话密码
-  password: string;
+  password?: string;
   // 会话私钥路径
-  privateKeyPath?: string;
+  privateKey?: string;
   // 会话私钥密码
   passphrase?: string;
   // 会话超时时间

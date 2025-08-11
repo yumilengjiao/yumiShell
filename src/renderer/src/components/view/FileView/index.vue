@@ -28,7 +28,7 @@ import { useDirectoryStore } from '@renderer/stores/useDirectoryStore';
 import { SftpRequest } from '@renderer/types/sftp';
 import { computed, ref, watch } from 'vue';
 
-let isOver = ref<boolean>(false)
+const isOver = ref<boolean>(false)
 const directoryStore = useDirectoryStore();
 const currentOperationObj = computed(() => directoryStore.currentOperationObj)
 const currentPathSplit = ref<string[]>([])
