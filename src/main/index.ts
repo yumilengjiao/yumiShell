@@ -1,11 +1,12 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
+import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
+import { join, resolve } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import fs from 'fs'
 import icon from '../../resources/icon.png?asset'
 import { SessionGroup } from './types/session'
 import { installExtension, VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import { Config } from './types/configType'
+import { spawn } from 'child_process'
 
 let win: BrowserWindow | null = null
 function createWindow(): void {
@@ -110,6 +111,15 @@ const readSessions = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+  // 注册全局快捷键
+  globalShortcut.register('CommandOrControl+Shift+I', () => {
+    const focusedWindow = BrowserWindow.getFocusedWindow()
+    if (focusedWindow) {
+      focusedWindow.webContents.openDevTools()
+    }
+  })
+  // 启动后端
+  startBackend()
   installExtension(VUEJS_DEVTOOLS)
     .then((name) => console.log(`Added Extension:  ${name}`))
     .catch((err) => console.log('An error occurred: ', err));
@@ -130,19 +140,19 @@ app.on('ready', () => {
   //监听渲染进程发送的窗口化事件
   ipcMain.on('window-windowed', windowedWindow)
   //监听渲染进程发送的保存session事件
-  ipcMain.on('save-sessions', (event, sessions) => {
+  ipcMain.on('save-sessions', (_, sessions) => {
     saveSessions(sessions)
   })
   //监听渲染进程发送的读取session事件
-  ipcMain.handle('read-sessions', (event) => {
+  ipcMain.handle('read-sessions', (_) => {
     return readSessions()
   })
   //监听渲染进程发送的保存配置事件
-  ipcMain.on('save-config', (event, config) => {
+  ipcMain.on('save-config', (_, config) => {
     saveConfigFile(config)
   })
   // 监听渲染进程发送的加载配置事件
-  ipcMain.handle('load-config', (event) => {
+  ipcMain.handle('load-config', (_) => {
     return loadConfigFile()
   })
 
@@ -164,3 +174,21 @@ app.on('window-all-closed', () => {
   }
 })
 
+//启动后端的方法
+function startBackend() {
+  const exe = process.platform === 'win32' ? 'yumi-shell-conn.exe' : 'yumi-shell-conn';
+  const backendPath = resolve(process.resourcesPath, exe);
+
+
+  // 让后端跟随 Electron 主进程生命周期
+  const backend = spawn(backendPath, [], { stdio: 'inherit', windowsHide: true });
+
+  backend.on('error', (err) => {
+    console.error('Backend spawn error:', err);
+  });
+
+  // 主进程退出时一起杀掉后端
+  app.on('before-quit', () => {
+    backend.kill();
+  });
+}

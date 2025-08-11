@@ -1,8 +1,6 @@
 import { ref, watchEffect } from "vue";
 import { defineStore } from "pinia";
 import { FileOperationObjList, FileOperationObj } from "@renderer/types/directory";
-import { watch } from "fs";
-import { SftpRequest } from "@renderer/types/sftp";
 
 export const useDirectoryStore = defineStore('directoryStore', () => {
   const fileOperationObjList = ref<FileOperationObjList>([]);

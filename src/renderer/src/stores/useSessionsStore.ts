@@ -99,7 +99,7 @@ export const useSessionsStore = defineStore('sessions', () => {
       }))
     }))
     //告知后端重新读取session.json
-    otherConnStore.ws.send(JSON.stringify({
+    otherConnStore.ws!.send(JSON.stringify({
       reqType: MessageType.READ_SESSIONS,
       sessionContent: sessionGroups
     }))
@@ -135,7 +135,7 @@ export const useSessionsStore = defineStore('sessions', () => {
       }))
     }))
     //告知后端重新读取session.json
-    otherConnStore.ws.send(JSON.stringify({
+    otherConnStore.ws!.send(JSON.stringify({
       reqType: MessageType.READ_SESSIONS,
     }))
 

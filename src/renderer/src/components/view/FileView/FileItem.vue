@@ -43,6 +43,8 @@ const directoryStore = useDirectoryStore()
 //定义一个起始时间的变量
 let lastClickTime = ref<number>(0)
 
+// 处理文件项悬停事件
+const emit = defineEmits(['overItem'])
 //拖拽进入时的处理方法
 const handleDragEnter = (e: DragEvent) => {
   if (!props.item.isDir) return
@@ -50,6 +52,7 @@ const handleDragEnter = (e: DragEvent) => {
   e.preventDefault()
   //加上蒙版
   fileItemRef.value?.classList.add('drag-over')
+  emit('overItem', true)
 }
 
 //拖拽进入后的处理方法
@@ -57,6 +60,7 @@ const handleDragOver = (e: DragEvent) => {
   if (!props.item.isDir) return
   console.log("开始推拽")
   e.preventDefault()
+  emit('overItem', true)
 }
 //拖拽离开的处理方法
 const handleDragLeave = (e: DragEvent) => {
@@ -179,11 +183,8 @@ const readFileAsBase64 = (file: File): Promise<string> => {
     border-radius: 10%;
     background-color: variables.$drag-over-color;
     opacity: 1;
-    /* 默认隐藏 */
     transition: opacity 0.2s;
-    /* 平滑过渡 */
     z-index: 1;
-    /* 确保覆盖在内容上方 */
   }
 
   .icon {

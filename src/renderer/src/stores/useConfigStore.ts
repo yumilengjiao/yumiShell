@@ -34,8 +34,10 @@ export const useConfigStore = defineStore('configStore', () => {
   }
   onMounted(() => {
     window.api.loadConfig().then((res) => {
-      config.value = res
-      changeStyle()
+      if (res) {
+        config.value = res
+        changeStyle()
+      }
     }).catch((err) => {
       console.log(err)
     })

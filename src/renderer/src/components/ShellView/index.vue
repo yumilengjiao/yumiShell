@@ -43,7 +43,7 @@ onMounted(() => {
   xterm = new Terminal({
     cursorBlink: configStore.config.basicConfig.isBlink,
     allowTransparency: true,
-    rows: 34,
+    rows: 33,
     cols: 90,
     theme: {
       foreground: configStore.config.basicConfig.shellTextColor,
@@ -109,13 +109,13 @@ watch(() => configStore.config, (newVal) => {
 
 
 //处理窗口大小变化
-const handleResize = (e) => {
+const handleResize = (_) => {
   if (props.activeName == props.sessionInfo.name) {
     fitAddon.fit();
     terminalStore.currentcols = xterm.cols
     terminalStore.currentrows = xterm.rows
     //调整后端pty大小
-    otherConnStore.ws.send(JSON.stringify({
+    otherConnStore.ws!.send(JSON.stringify({
       reqType: 'fitness',
       content: {
         row: xterm.rows,
@@ -161,7 +161,7 @@ const handleWebsocket = () => {
   height: 100%;
   background-color: var(--base-shell-bg-color);
   opacity: var(--base-shell-opacity);
-  padding: 5px;
+  padding: 0 5px 0;
 
   .shell-container {
     width: 100%;

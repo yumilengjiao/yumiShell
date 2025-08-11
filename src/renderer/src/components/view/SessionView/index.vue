@@ -1,21 +1,19 @@
 <template>
   <div class="session-view">
     <tiny-button @click="boxVisibility = true" title="弹出 Dialog" style="width: 100%;">Add new group</tiny-button>
-    <tiny-dialog-box :show-close="false" v-model:visible="boxVisibility" title="消息" width="30%">
+    <tiny-dialog-box :show-close="false" v-model:visible="boxVisibility" title="SessionGroup" width="30%">
       <span>Add new group</span>
       <tiny-input type="text" v-model="groupName" placeholder="Please input group name"></tiny-input>
       <template #footer>
-        <tiny-button @click="boxVisibility = false" round>取 消</tiny-button>
-        <tiny-button type="primary" @click="addGroup" round>确 定</tiny-button>
+        <tiny-button @click="boxVisibility = false" round style="color: var(--base-text-color);">Cancel</tiny-button>
+        <tiny-button type="primary" @click="addGroup" round style="color: var(--base-text-color);">Confirm</tiny-button>
       </template>
     </tiny-dialog-box>
     <!-- 展示当前会话 -->
     <tiny-tree-menu :allow-drop="() => false" :default-expand-all="true" :show-filter="false"
       :data="sessionsStore.sessions" ellipsis draggable @node-click="handleNodeClick" @node-drag-start="handleDragStart"
       empty-text="null sessions"
-      style="width: 100%;box-shadow: 0 0 10px var(--base-shadow-color);background-color: var(--base-background-color);">
-
-
+      style="width: 100%;box-shadow: 0 5px 10px -5px var(--base-shadow-color);background-color: var(--base-background-color);color: var(--base-text-color)!important;">
       <template #default="slotScope">
         <button class="addSession" v-if="slotScope.data.children"
           @click.stop="sessionAddControl(slotScope.data.id)">+</button>
@@ -331,6 +329,8 @@ const handleNodeClick = (nodeData, node) => {
 <style scoped lang="scss">
 @use '@renderer/styles/variables.scss' as variables;
 
+
+
 .session-view {
   width: 100%;
   height: calc(100vh - variables.$menu-bar-height);
@@ -338,6 +338,12 @@ const handleNodeClick = (nodeData, node) => {
   border-left: 1px solid var(--base-border-color);
   border-right: 1px solid var(--base-border-color);
   position: relative;
+  color: var(--base-text-color) !important;
+
+  :deep(.tiny-tree-menu .tree-node-name),
+  :deep(.tiny-button) {
+    color: var(--base-text-color) !important;
+  }
 
   .addSession {
     width: 20px;

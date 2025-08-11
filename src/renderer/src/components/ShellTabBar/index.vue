@@ -14,7 +14,8 @@
     </template>
     <div class="default-view" v-if="tabs.length === 0">
       <div class="default-view-content">
-        <span class="title">Welcome to YumiShell</span>
+        <span class="title">{{ title }}</span>
+        <span class="description">Welcome to YumiShell</span>
         <span class="description">😁please click the new tab button to create a new tab😁</span>
       </div>
     </div>
@@ -22,28 +23,50 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import ShellView from '@renderer/components/ShellView/index.vue'
 import { useShellViewTabStore } from '@renderer/stores/useShellViewTabStore'
 import { computed } from 'vue'
 import { useDirectoryStore } from '@renderer/stores/useDirectoryStore'
-
+import { useConfigStore } from '@renderer/stores/useConfigStore'
 
 const activeName = ref('0')
 const shellViewTabStore = useShellViewTabStore()
 const directoryStore = useDirectoryStore()
+const configStore = useConfigStore()
 const tabs = computed(() => shellViewTabStore.tabs)
+const title = ref('')
+onMounted(() => {
+  changeTitle()
+})
+//监听configStore.config.basicConfig.username
+watch(() => configStore.config.basicConfig.username, (_) => {
+  changeTitle()
+})
 //在avtive改变的时候改变当前仓库里的currentUniqId
 watch(activeName, (newVal) => {
   directoryStore.currentSessionUniqId = newVal
 })
-
+//关闭tab
 const closeTab = (name) => {
   if (name == activeName.value) {
     activeName.value = tabs.value[0]?.name
   }
   shellViewTabStore.closeTab(name)
 }
+//判断当前时间来修改title
+const changeTitle = () => {
+  if (new Date().getHours() >= 6 && new Date().getHours() < 12) {
+    title.value = 'Good morning,' + (configStore.config?.basicConfig.username || 'user')
+  } else if (new Date().getHours() >= 12 && new Date().getHours() < 18) {
+    title.value = 'Good afternoon,' + (configStore.config?.basicConfig.username || 'user')
+  } else if (new Date().getHours() >= 18 && new Date().getHours() < 24) {
+    title.value = 'Good evening,' + (configStore.config?.basicConfig.username || 'user')
+  } else {
+    title.value = 'Good night,' + (configStore.config?.basicConfig.username || 'user')
+  }
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -73,6 +96,7 @@ const closeTab = (name) => {
         margin-top: 10%;
         font-size: 48px;
         font-weight: 500;
+        line-height: 54px;
         color: var(--base-text-color);
       }
 

@@ -32,6 +32,15 @@ func OtherHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer upgrade.Close()
+	go func() {
+		<-config.InitSignal
+		err2 := upgrade.WriteMessage(websocket.TextMessage, []byte("ok"))
+		if err2 != nil {
+			log.Println("websocket发送数据失败", err2)
+		}
+		log.Println("完成连接信号")
+	}()
+	//完成连接信号
 	for {
 		_, p, err := upgrade.ReadMessage()
 		if err != nil {

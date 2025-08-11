@@ -27,6 +27,7 @@
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-webgl": "^0.18.0",
     "@xterm/xterm": "^5.5.0",
+    "axios": "^1.11.0",
     "electron-updater": "^6.3.9",
     "pinia": "^3.0.3",
     "sass-embedded": "^1.89.2"
@@ -37,7 +38,7 @@
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@opentiny/unplugin-tiny-vue": "^1.0.0",
     "@types/node": "^22.16.5",
-    "@vitejs/plugin-vue": "^6.0.0",
+    "@vitejs/plugin-vue": "5.2.4",
     "electron": "^37.2.3",
     "electron-builder": "^25.1.8",
     "electron-devtools-installer": "^4.0.0",

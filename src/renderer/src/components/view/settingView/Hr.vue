@@ -30,6 +30,7 @@ watch(() => props.percent, (newVal) => {
   align-items: center;
   margin-bottom: 5px;
   color: var(--base-text-color);
+  line-height: 30px;
 
   .line {
     background-color: gray;

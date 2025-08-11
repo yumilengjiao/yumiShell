@@ -10,10 +10,12 @@ import (
 
 var (
 	SessionGroups []SessionGroup
+	InitSignal    = make(chan struct{})
 )
 
 func init() {
 	LoadSessions()
+	close(InitSignal)
 }
 
 type Session struct {
