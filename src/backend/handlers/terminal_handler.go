@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/config"
 	"context"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/sftp"
@@ -36,8 +37,8 @@ func HandleTerminal(w http.ResponseWriter, r *http.Request) {
 	mutex.Lock()
 	//初始化websocket
 	upgrader := websocket.Upgrader{
-		WriteBufferSize: 1024,
-		ReadBufferSize:  1024,
+		WriteBufferSize: 4 * 1024,
+		ReadBufferSize:  4 * 1024,
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
@@ -78,23 +79,33 @@ func HandleTerminal(w http.ResponseWriter, r *http.Request) {
 func initSshClient(session *config.Session) (*sshClient, error) {
 	var key ssh.Signer
 	var err error
-	if session.Passphrase != "" {
-		key, err = ssh.ParsePrivateKeyWithPassphrase([]byte(session.PrivateKey), []byte(session.Passphrase))
-		if err != nil {
-			log.Println("密钥解析失败")
+	var authMethods []ssh.AuthMethod
+	// 条件化处理密钥认证
+	if session.PrivateKey != "" {
+		if session.Passphrase != "" {
+			key, err = ssh.ParsePrivateKeyWithPassphrase([]byte(session.PrivateKey), []byte(session.Passphrase))
+		} else {
+			key, err = ssh.ParsePrivateKey([]byte(session.PrivateKey))
 		}
-	} else {
-		key, err = ssh.ParsePrivateKey([]byte(session.PrivateKey))
 		if err != nil {
-			log.Println("密钥解析失败")
+			log.Println("密钥解析失败：", err)
+		} else {
+			authMethods = append(authMethods, ssh.PublicKeys(key))
 		}
 	}
+
+	// 条件化处理密码认证
+	if session.Password != "" {
+		authMethods = append(authMethods, ssh.Password(session.Password))
+	}
+
+	// 确保至少有一个认证方式有效
+	if len(authMethods) == 0 {
+		return nil, fmt.Errorf("未提供有效的认证方式（密钥或密码均为空）")
+	}
 	sshConfig := ssh.ClientConfig{
-		User: session.Username,
-		Auth: []ssh.AuthMethod{
-			ssh.PublicKeys(key),
-			ssh.Password(session.Password),
-		},
+		User:            session.Username,
+		Auth:            authMethods,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 	address := session.Host + ":" + strconv.Itoa(session.Port)
@@ -169,7 +180,7 @@ func (sshClient *sshClient) start(upgrade *websocket.Conn) error {
 					return
 				}
 				log.Println("stdout数据:", string(buffer[:n]))
-				upgrade.WriteMessage(websocket.TextMessage, buffer[:n])
+				upgrade.WriteMessage(websocket.BinaryMessage, buffer[:n])
 			}
 		}
 	}()

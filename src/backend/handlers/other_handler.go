@@ -20,8 +20,8 @@ type OtherRequest struct {
 
 func OtherHandler(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
+		ReadBufferSize:  4 * 1024,
+		WriteBufferSize: 4 * 1024,
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},

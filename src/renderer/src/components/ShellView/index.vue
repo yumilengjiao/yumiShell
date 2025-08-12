@@ -126,8 +126,12 @@ const handleResize = (_) => {
   }
 }
 const initWebsocket = () => {
-  terminalWebsocket = new WebSocket("ws://localhost:8977/ws/term/" + props.sessionInfo.sessionId + '/' + props.sessionInfo.name)
-  directoryWebsocket = new WebSocket("ws://localhost:8977/ws/file/" + props.sessionInfo.name)
+  terminalWebsocket = new WebSocket(`ws://localhost:8977/ws/term/${props.sessionInfo.sessionId}/${props.sessionInfo.name}`);
+  directoryWebsocket = new WebSocket(`ws://localhost:8977/ws/file/${props.sessionInfo.name}`);
+  //设置二进制类型
+  terminalWebsocket.binaryType = 'arraybuffer';
+  directoryWebsocket.binaryType = 'arraybuffer';
+
   directoryStore.fileOperationObjList.push({
     uniqId: props.sessionInfo.name,
     fileList: [],
@@ -140,8 +144,23 @@ const handleWebsocket = () => {
     console.log('terminalWebsocket连接成功');
   }
   terminalWebsocket.onmessage = (e) => {
-    console.log(e.data);
-    xterm.write(e.data)
+    try {
+      let data = e.data;
+      // 处理二进制数据
+      if (data instanceof ArrayBuffer) {
+        // 尝试将ArrayBuffer解码为UTF-8字符串
+        const decoder = new TextDecoder('utf-8');
+        data = decoder.decode(data);
+      }
+      // 确保是字符串类型再写入终端
+      if (typeof data === 'string') {
+        xterm.write(data);
+      } else {
+        console.error('接收到非字符串数据:', data);
+      }
+    } catch (error) {
+      console.error('WebSocket消息处理错误:', error);
+    }
   }
   terminalWebsocket.onerror = (e) => {
     console.log(e);

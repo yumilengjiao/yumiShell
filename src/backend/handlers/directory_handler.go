@@ -41,8 +41,8 @@ func HandleDirectory(w http.ResponseWriter, r *http.Request) {
 	client := sshClientList[s]
 	mutex.Unlock()
 	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
+		ReadBufferSize:  128 * 1024,
+		WriteBufferSize: 128 * 1024,
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
@@ -208,6 +208,7 @@ func toGetPathFile(sftpRequest *SftpRequest, client *sshClient, upgrade *websock
 	log.Println("返回的fileList:", fileList)
 	err = upgrade.WriteJSON(fileList)
 	if err != nil {
+		log.Println("websocket发送数据失败", err)
 		return err
 	}
 	return nil
@@ -219,7 +220,11 @@ func toUploadFile(sftpRequest *SftpRequest, client *sshClient) error {
 	log.Println("上传路径是", path)
 	log.Println("上传的文件名是", sftpRequest.File.Name)
 	//base64转码文件
-	file, _ := base64.StdEncoding.DecodeString(sftpRequest.File.Content)
+	file, err := base64.StdEncoding.DecodeString(sftpRequest.File.Content)
+	if err != nil {
+		log.Println("base64解码失败", err)
+		return err
+	}
 	create, err := client.sftpClient.Create(path + "/" + sftpRequest.File.Name)
 	log.Println("创建文件的路径为", path+"/"+sftpRequest.File.Name)
 	if err != nil {
