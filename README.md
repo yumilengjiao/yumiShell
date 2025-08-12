@@ -5,10 +5,15 @@
 #### 1.使用
 
 打开可执行程序后，点击Add new group建立一个新的组用于管理会话，然后在你的组上新建ssh会话，双击你新建的会话即可连接到远程主机
+![image](https://github.com/yumilengjiao/yumiShell/blob/master/assets/addSession.gif?raw=true)
 
-当然你也可以通过鼠标拖拽的方式上传你的文件(不支持拖拽文件夹)
+
+当然你也可以通过鼠标拖拽的方式上传你的文件(不支持拖拽文件夹),上传暂不支持上传大文件，文件大小最好不超过1GB
+![image](https://github.com/yumilengjiao/yumiShell/blob/master/assets/fileUpload.gif?raw=true)
+
 
 你也可以在设置界面搭配你自己喜欢的主题
+![image](https://github.com/yumilengjiao/yumiShell/blob/master/assets/setting.png?raw=true)
 
 #### 2.调试
 
